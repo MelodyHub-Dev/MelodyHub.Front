@@ -1,0 +1,158 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 20px 0;
+  transition: all 0.3s ease;
+}
+
+.navbar--scrolled {
+  background: rgba(10, 10, 10, 0.95);
+  backdrop-filter: blur(10px);
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.navbar__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.navbar__logo-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--orange);
+  flex-shrink: 0;
+}
+
+.navbar__burger-icon {
+  width: 24px;
+  height: 24px;
+  color: #fff;
+}
+
+.navbar__logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.navbar__logo-accent {
+  color: var(--orange);
+}
+
+.navbar__links {
+  display: flex;
+  list-style: none;
+  gap: 32px;
+  flex: 1;
+}
+
+.navbar__links a {
+  color: var(--gray-light);
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s;
+}
+
+.navbar__links a:hover {
+  color: var(--orange);
+}
+
+.navbar__actions {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.btn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn--outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: #fff;
+}
+
+.btn--outline:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.btn--primary {
+  background: var(--orange);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: var(--orange-light);
+}
+
+.navbar__burger {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  margin-left: auto;
+}
+
+@media (max-width: 900px) {
+  .navbar__links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #0f0f0f;
+    flex-direction: column;
+    padding: 20px 24px;
+    gap: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .navbar__links--open {
+    display: flex;
+  }
+
+  .navbar__actions {
+    display: none;
+  }
+
+  .navbar__burger {
+    display: flex;
+  }
+}
+
+.navbar__user {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray-light);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}

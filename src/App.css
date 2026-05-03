@@ -1,0 +1,86 @@
+.App {
+  min-height: 100vh;
+  background-color: var(--black);
+  color: #ffffff;
+}
+
+/* Shared button styles used across components */
+.btn {
+  padding: 9px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.btn--outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: #fff;
+}
+
+.btn--outline:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+.btn--primary {
+  background: var(--orange);
+  color: #fff;
+}
+
+.btn--primary:hover {
+  background: var(--orange-light);
+}
+
+.btn--lg {
+  padding: 14px 36px;
+  font-size: 16px;
+  border-radius: 10px;
+}
+
+/* Hero buttons reused in CTA */
+.hero__btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.hero__btn--primary {
+  background: var(--orange);
+  color: #fff;
+}
+
+.hero__btn--primary:hover {
+  background: var(--orange-light);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(255, 107, 0, 0.35);
+}
+
+.hero__btn-arrow {
+  transition: transform 0.2s;
+}
+
+.hero__btn--primary:hover .hero__btn-arrow {
+  transform: translateX(4px);
+}
+
+.hero__btn--secondary {
+  background: var(--black-card);
+  color: #fff;
+  border: 1px solid var(--border);
+}
+
+.hero__btn--secondary:hover {
+  border-color: var(--orange);
+  color: var(--orange);
+}

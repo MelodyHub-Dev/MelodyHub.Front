@@ -1,0 +1,314 @@
+.catalog-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px 40px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ── Заголовок ──────────────────────────────────────────────────────────────── */
+
+.catalog-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.catalog-header h1 {
+  font-size: 2.5rem;
+  color: #ffffff;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.catalog-header p {
+  font-size: 1.1rem;
+  color: var(--gray);
+}
+
+/* ── Фильтры ───────────────────────────────────────────────────────────────── */
+
+.catalog-filters {
+  background: var(--black-card);
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 30px;
+  border: 1px solid var(--border);
+}
+
+.search-box {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.filters-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+}
+
+.filter-select {
+  padding: 10px 12px;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.filter-select option {
+  background: var(--black-card);
+}
+
+/* ── Результаты ─────────────────────────────────────────────────────────────── */
+
+.catalog-results {
+  margin-top: 30px;
+}
+
+.results-info {
+  font-size: 1rem;
+  color: var(--gray);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+
+.instruments-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 25px;
+}
+
+/* ── Карточки инструментов ──────────────────────────────────────────────────── */
+
+.instrument-card {
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.instrument-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(255, 107, 0, 0.15);
+  border-color: var(--orange);
+}
+
+.card-header {
+  padding: 20px 20px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.instrument-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.category-badge {
+  display: inline-block;
+  background: rgba(255, 107, 0, 0.15);
+  color: var(--orange);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid rgba(255, 107, 0, 0.3);
+}
+
+.card-body {
+  padding: 15px 20px;
+}
+
+.instrument-description {
+  color: var(--gray);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 15px;
+}
+
+.instrument-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.stat-label {
+  color: var(--gray);
+  font-weight: 500;
+}
+
+.stat-value {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.cost-value {
+  color: var(--orange);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+/* ── Значки сложности ───────────────────────────────────────────────────────── */
+
+.difficulty-badge {
+  padding: 4px 10px;
+  border-radius: 16px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.difficulty-0 {
+  background: rgba(20, 184, 166, 0.15);
+  color: #14b8a6;
+  border: 1px solid rgba(20, 184, 166, 0.3);
+}
+
+.difficulty-1 {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.difficulty-2 {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* ── Подвал карточки ────────────────────────────────────────────────────────── */
+
+.card-footer {
+  padding: 15px 20px;
+  background: var(--black);
+  display: flex;
+  gap: 10px;
+}
+
+.btn-details {
+  flex: 1;
+  padding: 10px 16px;
+  background: var(--orange);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-details:hover {
+  background: var(--orange-light);
+}
+
+.btn-favorite {
+  padding: 10px 16px;
+  background: transparent;
+  color: var(--gray);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-favorite:hover {
+  color: var(--orange);
+  border-color: var(--orange);
+}
+
+.btn-favorite.active {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+  border-color: #ef4444;
+}
+
+/* ── Состояния ──────────────────────────────────────────────────────────────── */
+
+.loading,
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.1rem;
+}
+
+.loading {
+  color: var(--gray);
+}
+
+.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray);
+}
+
+.no-results p:first-child {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ── Адаптивность ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .catalog-container {
+    padding: 70px 15px 30px;
+  }
+
+  .catalog-header h1 {
+    font-size: 2rem;
+  }
+
+  .instruments-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .filters-row {
+    grid-template-columns: 1fr;
+  }
+
+  .card-footer {
+    flex-direction: column;
+  }
+}

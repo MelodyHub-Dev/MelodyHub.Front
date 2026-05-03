@@ -1,0 +1,239 @@
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--black);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.auth-page__bg-circle {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  pointer-events: none;
+}
+
+.auth-page__bg-circle--1 {
+  width: 400px;
+  height: 400px;
+  background: var(--orange);
+  top: -100px;
+  right: -100px;
+}
+
+.auth-page__bg-circle--2 {
+  width: 300px;
+  height: 300px;
+  background: #a855f7;
+  bottom: -80px;
+  left: -80px;
+}
+
+.auth-card {
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  z-index: 1;
+}
+
+.auth-card__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.auth-card__logo-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--orange);
+}
+
+.auth-card__logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.auth-card__logo-accent {
+  color: var(--orange);
+}
+
+.auth-card__title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 6px;
+}
+
+.auth-card__subtitle {
+  font-size: 14px;
+  color: var(--gray-light);
+  margin: 0 0 28px;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.auth-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.auth-form__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-light);
+}
+
+.auth-form__input-wrap {
+  position: relative;
+}
+
+.auth-form__input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--gray);
+  pointer-events: none;
+}
+
+.auth-form__input {
+  width: 100%;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 11px 12px 11px 38px;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.auth-form__input::placeholder {
+  color: var(--gray);
+}
+
+.auth-form__input:focus {
+  border-color: var(--orange);
+}
+
+.auth-form__input--error {
+  border-color: #ef4444;
+}
+
+.auth-form__error {
+  font-size: 12px;
+  color: #ef4444;
+}
+
+.auth-form__toggle-pass {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.auth-form__toggle-pass-icon {
+  width: 18px;
+  height: 18px;
+  color: var(--gray);
+  transition: color 0.2s;
+}
+
+.auth-form__toggle-pass:hover .auth-form__toggle-pass-icon {
+  color: var(--orange);
+}
+
+.auth-form__submit {
+  margin-top: 4px;
+  width: 100%;
+  padding: 12px;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+
+.auth-form__submit:hover {
+  background: var(--orange-light);
+  transform: translateY(-1px);
+}
+
+.auth-card__footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--gray-light);
+}
+
+.auth-card__footer .auth-card__footer_link {
+  color: var(--orange);
+  text-decoration: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.auth-card__footer .auth-card__footer_link:hover {
+  text-decoration: underline;
+}
+
+.auth-form__server-error {
+  margin-top: 12px;
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #ef4444;
+  text-align: center;
+}
+
+.auth-form__submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-link-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--orange);
+  font-weight: 600;
+  font-size: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.auth-link-btn:hover {
+  text-decoration: underline;
+}

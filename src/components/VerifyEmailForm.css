@@ -1,0 +1,55 @@
+.verify__icon-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.verify__icon {
+  width: 48px;
+  height: 48px;
+  color: var(--orange);
+  background: rgba(255, 107, 0, 0.1);
+  border-radius: 50%;
+  padding: 10px;
+  box-sizing: content-box;
+}
+
+.verify__email {
+  color: var(--orange);
+  font-weight: 600;
+}
+
+.verify__digits {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 8px 0 4px;
+}
+
+.verify__digit {
+  width: 48px;
+  height: 56px;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  caret-color: var(--orange);
+}
+
+.verify__digit:focus {
+  border-color: var(--orange);
+}
+
+.verify__digit--error {
+  border-color: #ef4444;
+}
+
+.verify__cooldown {
+  color: var(--gray);
+  font-size: 14px;
+}

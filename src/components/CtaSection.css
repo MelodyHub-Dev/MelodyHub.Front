@@ -1,0 +1,72 @@
+.cta {
+  padding: 100px 0;
+  background: var(--black);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta__container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+}
+
+.cta__glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: var(--orange);
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.08;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.cta__content {
+  background: var(--black-card);
+  border: 1px solid rgba(255, 107, 0, 0.25);
+  border-radius: 24px;
+  padding: 60px 48px;
+  text-align: center;
+  position: relative;
+}
+
+.cta__title {
+  font-size: clamp(26px, 4vw, 38px);
+  font-weight: 800;
+  margin-bottom: 16px;
+  letter-spacing: -0.5px;
+}
+
+.cta__sub {
+  color: var(--gray);
+  font-size: 16px;
+  line-height: 1.7;
+  margin-bottom: 36px;
+  max-width: 520px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta__actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.cta__note {
+  font-size: 13px;
+  color: var(--gray);
+}
+
+@media (max-width: 560px) {
+  .cta__content {
+    padding: 40px 24px;
+  }
+}
