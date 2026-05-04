@@ -22,6 +22,8 @@ import Blog from "./components/Blog";
 import BlogArticlePage from "./components/BlogArticlePage";
 import CreateArticlePage from "./components/CreateArticlePage";
 import EditArticlePage from "./components/EditArticlePage";
+import Quizzes from "./components/Quizzes";
+import QuizPage from "./components/QuizPage";
 import PrivateRoute from "./components/PrivateRoute";
 
 const HomePage = () => (
@@ -114,6 +116,20 @@ const EditArticlePageWrapper = () => (
   </>
 );
 
+const QuizzesPageWrapper = () => (
+  <>
+    <Navbar />
+    <Quizzes />
+  </>
+);
+
+const QuizPageWrapper = () => (
+  <>
+    <Navbar />
+    <QuizPage />
+  </>
+);
+
 function App() {
   return (
     <Routes>
@@ -174,6 +190,8 @@ function App() {
           </PrivateRoute>
         }
       />
+      <Route path="/quizzes" element={<QuizzesPageWrapper />} />
+      <Route path="/quiz/:id" element={<QuizPageWrapper />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

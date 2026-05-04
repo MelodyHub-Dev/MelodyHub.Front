@@ -1,0 +1,146 @@
+.quizzes-page {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 100px 24px 60px;
+}
+
+.quizzes-page__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.quizzes-page__header {
+  margin-bottom: 32px;
+}
+
+.quizzes-page__header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.quizzes-page__header p {
+  font-size: 14px;
+  color: var(--gray-light);
+  margin: 0;
+}
+
+.quizzes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.quiz-card {
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+}
+
+.quiz-card:hover {
+  border-color: var(--orange);
+  transform: translateY(-4px);
+}
+
+.quiz-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.quiz-card__title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  flex: 1;
+}
+
+.quiz-card__difficulty {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.quiz-card__difficulty--easy {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.quiz-card__difficulty--medium {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+.quiz-card__difficulty--hard {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.quiz-card__description {
+  font-size: 14px;
+  color: var(--gray-light);
+  margin: 0 0 16px;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.quiz-card__stats {
+  display: flex;
+  gap: 16px;
+  font-size: 13px;
+  color: var(--gray);
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.quiz-card__stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quiz-card__stat svg {
+  width: 16px;
+  height: 16px;
+}
+
+.quizzes-loading,
+.quizzes-error {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray-light);
+}
+
+.quizzes-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--gray-light);
+}
+
+.quizzes-empty svg {
+  width: 48px;
+  height: 48px;
+  color: var(--gray);
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .quizzes-page {
+    padding: 80px 16px 40px;
+  }
+
+  .quizzes-grid {
+    grid-template-columns: 1fr;
+  }
+}
