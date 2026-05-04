@@ -28,16 +28,11 @@ const Navbar = () => {
     navigate("/");
   };
 
-  const navLink = (hash, label) =>
-    isHome ? (
-      <a href={hash} onClick={() => setMenuOpen(false)}>
-        {label}
-      </a>
-    ) : (
-      <a href="/" onClick={() => setMenuOpen(false)}>
-        {label}
-      </a>
-    );
+  const navLink = (hash, label) => (
+    <a href={hash} onClick={() => setMenuOpen(false)}>
+      {label}
+    </a>
+  );
 
   return (
     <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
@@ -57,10 +52,9 @@ const Navbar = () => {
           className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}
         >
           <li>{navLink("/catalog", "Каталог")}</li>
-          <li>{navLink("#instructions", "Инструкции")}</li>
-          <li>{navLink("#blog", "Блог")}</li>
-          <li>{navLink("#quiz", "Викторина")}</li>
-          <li>{navLink("#calculator", "Калькулятор")}</li>
+          <li>{navLink("/blog", "Блог")}</li>
+          <li>{navLink("/quizzes", "Викторина")}</li>
+          <li>{navLink("/calculator", "Калькулятор")}</li>
         </ul>
 
         <div className="navbar__actions">

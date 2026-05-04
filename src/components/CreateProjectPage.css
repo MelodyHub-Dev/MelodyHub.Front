@@ -1,0 +1,130 @@
+.create-project {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 100px 24px 60px;
+}
+
+.create-project__container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.create-project__header {
+  margin-bottom: 32px;
+}
+
+.create-project__header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 8px;
+}
+
+.create-project__header p {
+  font-size: 14px;
+  color: var(--gray-light);
+  margin: 0;
+}
+
+.create-project__form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.create-project__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.create-project__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-light);
+}
+
+.create-project__input,
+.create-project__select,
+.create-project__textarea {
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.create-project__input:focus,
+.create-project__select:focus,
+.create-project__textarea:focus {
+  border-color: var(--orange);
+}
+
+.create-project__select option {
+  background: #1a1a1a;
+}
+
+.create-project__textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.create-project__range-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.create-project__range {
+  flex: 1;
+  accent-color: var(--orange);
+}
+
+.create-project__range-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--orange);
+  min-width: 36px;
+  text-align: right;
+}
+
+.create-project__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--gray-light);
+}
+
+.empty-state__icon {
+  width: 48px;
+  height: 48px;
+  color: var(--gray);
+  margin: 0 auto 12px;
+}
+
+.server-error {
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #ef4444;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .create-project__row {
+    grid-template-columns: 1fr;
+  }
+}

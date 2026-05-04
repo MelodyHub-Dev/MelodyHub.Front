@@ -9,6 +9,7 @@ import {
   WrenchScrewdriverIcon,
 } from "@heroicons/react/24/outline";
 import "./CatalogSection.css";
+import { useNavigate } from "react-router-dom";
 
 // Heroicons для каждого инструмента (нет специфичных, используем тематические)
 const InstrumentIcon = ({ category }) => {
@@ -92,6 +93,8 @@ const CatalogSection = () => {
   const [active, setActive] = useState("Все");
   const [search, setSearch] = useState("");
 
+  const navigate = useNavigate();
+
   const filtered = instruments.filter(
     (i) =>
       (active === "Все" || i.category === active) &&
@@ -162,7 +165,10 @@ const CatalogSection = () => {
                   </div>
                 </div>
               </div>
-              <button className="instrument-card__btn">
+              <button
+                className="instrument-card__btn"
+                onClick={() => navigate("/catalog")}
+              >
                 Подробнее{" "}
                 <ArrowRightIcon className="instrument-card__btn-icon" />
               </button>
@@ -171,7 +177,10 @@ const CatalogSection = () => {
         </div>
 
         <div className="catalog__more">
-          <button className="btn btn--outline btn--lg">
+          <button
+            className="btn btn--outline btn--lg"
+            onClick={() => navigate("/catalog")}
+          >
             Смотреть все инструменты
           </button>
         </div>

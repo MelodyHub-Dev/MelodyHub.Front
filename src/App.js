@@ -14,6 +14,14 @@ import VerifyEmailForm from "./components/VerifyEmailForm";
 import Dashboard from "./components/Dashboard";
 import Catalog from "./components/Catalog";
 import InstrumentDetails from "./components/InstrumentDetails";
+import CreateProjectPage from "./components/CreateProjectPage";
+import EditProjectPage from "./components/EditProjectPage";
+import ProjectDetailsPage from "./components/ProjectDetailsPage";
+import Calculator from "./components/Calculator";
+import Blog from "./components/Blog";
+import BlogArticlePage from "./components/BlogArticlePage";
+import CreateArticlePage from "./components/CreateArticlePage";
+import EditArticlePage from "./components/EditArticlePage";
 import PrivateRoute from "./components/PrivateRoute";
 
 const HomePage = () => (
@@ -50,6 +58,62 @@ const DashboardPage = () => (
   </>
 );
 
+const CreateProjectPageWrapper = () => (
+  <>
+    <Navbar />
+    <CreateProjectPage />
+  </>
+);
+
+const EditProjectPageWrapper = () => (
+  <>
+    <Navbar />
+    <EditProjectPage />
+  </>
+);
+
+const ProjectDetailsPageWrapper = () => (
+  <>
+    <Navbar />
+    <ProjectDetailsPage />
+  </>
+);
+
+const CalculatorPage = () => (
+  <>
+    <Navbar />
+    <Calculator />
+  </>
+);
+
+const BlogPage = () => (
+  <>
+    <Navbar />
+    <Blog />
+  </>
+);
+
+const BlogArticlePageWrapper = () => (
+  <>
+    <Navbar />
+    <BlogArticlePage />
+  </>
+);
+
+const CreateArticlePageWrapper = () => (
+  <>
+    <Navbar />
+    <CreateArticlePage />
+  </>
+);
+
+const EditArticlePageWrapper = () => (
+  <>
+    <Navbar />
+    <EditArticlePage />
+  </>
+);
+
 function App() {
   return (
     <Routes>
@@ -64,6 +128,49 @@ function App() {
         element={
           <PrivateRoute>
             <DashboardPage />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/create-project"
+        element={
+          <PrivateRoute>
+            <CreateProjectPageWrapper />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/edit-project/:id"
+        element={
+          <PrivateRoute>
+            <EditProjectPageWrapper />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/project/:id"
+        element={
+          <PrivateRoute>
+            <ProjectDetailsPageWrapper />
+          </PrivateRoute>
+        }
+      />
+      <Route path="/calculator" element={<CalculatorPage />} />
+      <Route path="/blog" element={<BlogPage />} />
+      <Route path="/blog/:id" element={<BlogArticlePageWrapper />} />
+      <Route
+        path="/create-article"
+        element={
+          <PrivateRoute>
+            <CreateArticlePageWrapper />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/edit-article/:id"
+        element={
+          <PrivateRoute>
+            <EditArticlePageWrapper />
           </PrivateRoute>
         }
       />

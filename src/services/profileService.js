@@ -32,10 +32,17 @@ export const updateUser = (dto) =>
 
 // ── Проекты ───────────────────────────────────────────────────────────────────
 
-export const getProjects = (userId) =>
-  fetch(`${BASE_URL}/user-projects/${userId}`, { headers: authHeaders() }).then(
+export const getProject = (id) =>
+  fetch(`${BASE_URL}/user-projects/${id}`, { headers: authHeaders() }).then(
     handleResponse,
   );
+
+export const getProjects = (userId, instrumentId = null) => {
+  const url = instrumentId
+    ? `${BASE_URL}/user-projects/user/${userId}?instrumentId=${instrumentId}`
+    : `${BASE_URL}/user-projects/user/${userId}`;
+  return fetch(url, { headers: authHeaders() }).then(handleResponse);
+};
 
 export const createProject = (dto) =>
   fetch(`${BASE_URL}/user-projects/create`, {

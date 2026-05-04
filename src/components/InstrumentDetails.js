@@ -16,6 +16,7 @@ import {
   addFavorite,
   removeFavorite,
   getFavorites,
+  getProjects,
 } from "../services/profileService";
 
 const BASE_URL = "https://localhost:7111";
@@ -29,6 +30,7 @@ const InstrumentDetails = () => {
   const [categories, setCategories] = useState([]);
   const [materials, setMaterials] = useState([]);
   const [blueprints, setBlueprints] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [favorites, setFavorites] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -37,24 +39,31 @@ const InstrumentDetails = () => {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [instrumentData, categoriesData, materialsData, blueprintsData] =
-        await Promise.all([
-          getInstrumentDetails(id),
-          getCategories(),
-          getInstrumentMaterials(),
-          getBlueprints(id),
-        ]);
+      const [
+        instrumentData,
+        categoriesData,
+        materialsData,
+        blueprintsData,
+        projectsData,
+      ] = await Promise.all([
+        getInstrumentDetails(id),
+        getCategories(),
+        getInstrumentMaterials(),
+        getBlueprints(id),
+        getProjects(currentUser?.userId, id),
+      ]);
 
       setInstrument(instrumentData);
       setCategories(categoriesData.instrumentCategories || []);
       setMaterials(materialsData.items || []);
       setBlueprints(blueprintsData.blueprints || []);
+      setProjects(projectsData.userProjects || []);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, currentUser?.userId]);
 
   useEffect(() => {
     loadData();
@@ -346,6 +355,62 @@ const InstrumentDetails = () => {
                   </span>
                 </div>
               ))}
+          </div>
+        </div>
+      )}
+
+      {/* Проекты пользователей */}
+      {projects.length > 0 && (
+        <div className="projects-section">
+          <h2 className="section-title">Проекты пользователей</h2>
+          <div className="projects-list">
+            {projects.map((project) => (
+              <div key={project.id} className="project-item">
+                <div className="project-header">
+                  <h3 className="project-name">{project.name}</h3>
+                  <span className={`project-status status-${project.status}`}>
+                    {project.status === 0
+                      ? "Запланирован"
+                      : project.status === 1
+                        ? "В процессе"
+                        : project.status === 2
+                          ? "На паузе"
+                          : project.status === 3
+                            ? "Завершён"
+                            : "Заброшен"}
+                  </span>
+                </div>
+                <div className="project-progress">
+                  <div className="progress-bar">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${project.progress}%` }}
+                    />
+                  </div>
+                  <span className="progress-text">{project.progress}%</span>
+                </div>
+                {project.description && (
+                  <p className="project-description">{project.description}</p>
+                )}
+                <div className="project-meta">
+                  {project.startDate && (
+                    <span className="meta-item">
+                      Начало: {project.startDate}
+                    </span>
+                  )}
+                  {project.finishDate && (
+                    <span className="meta-item">
+                      Завершение: {project.finishDate}
+                    </span>
+                  )}
+                  {project.actualCost && (
+                    <span className="meta-item">
+                      Стоимость: {formatPrice(project.actualCost)}
+                    </span>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}

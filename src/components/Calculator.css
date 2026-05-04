@@ -1,0 +1,259 @@
+.calculator-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 20px 40px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* ── Заголовок ──────────────────────────────────────────────────────────────── */
+
+.calculator-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.calculator-header h1 {
+  font-size: 2.5rem;
+  color: #ffffff;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.calculator-header p {
+  font-size: 1.1rem;
+  color: var(--gray);
+}
+
+/* ── Контент ────────────────────────────────────────────────────────────────── */
+
+.calculator-content {
+  display: flex;
+  gap: 30px;
+}
+
+/* ── Список материалов ──────────────────────────────────────────────────────── */
+
+.materials-list {
+  display: flex;
+  background: var(--black-card);
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid var(--border);
+}
+
+.search-box {
+  margin-bottom: 20px;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--orange);
+}
+
+.materials-grid {
+  display: flex;
+  gap: 15px;
+  width: 100%;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+/* ── Карточка материала ────────────────────────────────────────────────────── */
+
+.material-card {
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 15px;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 240px;
+}
+
+.material-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--orange);
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.1);
+}
+
+.material-card.selected {
+  border-color: var(--orange);
+  background: rgba(255, 107, 0, 0.05);
+}
+
+.material-info {
+  flex: 1;
+}
+
+.material-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0 0 8px 0;
+}
+
+.material-instrument {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin: 0 0 8px 0;
+}
+
+.material-quantity {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin: 0 0 4px 0;
+}
+
+.material-unit-price {
+  font-size: 0.85rem;
+  color: var(--gray);
+  margin: 0;
+}
+
+.material-total {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.total-cost {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--orange);
+}
+
+/* ── Панель суммы ────────────────────────────────────────────────────────────── */
+
+.summary-panel {
+  background: var(--black-card);
+  border-radius: 12px;
+  padding: 25px;
+  border: 1px solid var(--border);
+  margin-bottom: 28px;
+  width: 500px;
+}
+
+.summary-panel h2 {
+  font-size: 1.2rem;
+  color: var(--gray);
+  margin: 0 0 20px 0;
+  font-weight: 500;
+}
+
+.total-price {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.selected-list {
+  margin-top: 20px;
+}
+
+.selected-list h3 {
+  font-size: 0.9rem;
+  color: var(--gray);
+  margin: 0 0 10px 0;
+}
+
+.selected-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.selected-list li {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 0.85rem;
+  color: #ffffff;
+  border-bottom: 1px solid var(--border);
+}
+
+.selected-list li:last-child {
+  border-bottom: none;
+}
+
+/* ── Состояния ──────────────────────────────────────────────────────────────── */
+
+.loading,
+.error {
+  text-align: center;
+  padding: 60px 20px;
+  font-size: 1.1rem;
+}
+
+.loading {
+  color: var(--gray);
+}
+
+.error {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--gray);
+}
+
+.no-results p:first-child {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+/* ── Адаптивность ───────────────────────────────────────────────────────────── */
+
+@media (max-width: 992px) {
+  .calculator-content {
+    grid-template-columns: 1fr;
+  }
+
+  .summary-panel {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .calculator-container {
+    padding: 70px 15px 30px;
+  }
+
+  .calculator-header h1 {
+    font-size: 2rem;
+  }
+
+  .materials-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .total-price {
+    font-size: 2rem;
+  }
+}

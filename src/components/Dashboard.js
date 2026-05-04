@@ -4,11 +4,14 @@ import {
   UserIcon,
   WrenchScrewdriverIcon,
   HeartIcon,
+  DocumentTextIcon,
   PencilIcon,
   TrashIcon,
   PlusIcon,
   XMarkIcon,
   CheckIcon,
+  EyeIcon,
+  ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
 import {
   getUser,
@@ -22,6 +25,11 @@ import {
   getInstruments,
   uploadAvatar,
 } from "../services/profileService";
+import {
+  getBlogArticlesByAuthor,
+  deleteBlogArticle,
+} from "../services/blogService";
+import { getArticleComments } from "../services/articleCommentService";
 import { useAuth } from "../context/AuthContext";
 import AvatarUploader from "./AvatarUploader";
 import "./Dashboard.css";
@@ -43,6 +51,40 @@ const STATUS_CLASS = {
   3: "status--completed",
   4: "status--abandoned",
 };
+
+// ── ConfirmModal ──────────────────────────────────────────────────────────────
+
+const ConfirmModal = ({ title, message, onConfirm, onClose }) => (
+  <div
+    className="modal-overlay"
+    onClick={(e) => e.target === e.currentTarget && onClose()}
+  >
+    <div className="modal" style={{ maxWidth: 400 }}>
+      <div className="modal__header">
+        <h2 className="modal__title">{title}</h2>
+        <button className="modal__close" onClick={onClose} aria-label="Закрыть">
+          <XMarkIcon className="modal__close-icon" />
+        </button>
+      </div>
+      <p style={{ color: "var(--gray-light)", marginBottom: 20 }}>{message}</p>
+      <div className="modal-form__actions">
+        <button type="button" className="btn btn--outline" onClick={onClose}>
+          Отмена
+        </button>
+        <button
+          type="button"
+          className="btn btn--danger"
+          onClick={() => {
+            onConfirm();
+            onClose();
+          }}
+        >
+          Удалить
+        </button>
+      </div>
+    </div>
+  </div>
+);
 
 const initProject = (userId) => ({
   userId,
@@ -437,7 +479,9 @@ const ProjectsTab = ({ userId }) => {
   const [projects, setProjects] = useState([]);
   const [instruments, setInstruments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [modal, setModal] = useState(null); // null | project object
+  const [modal, setModal] = useState(null);
+  const [deleteModal, setDeleteModal] = useState(null);
+  const navigate = useNavigate();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -469,7 +513,6 @@ const ProjectsTab = ({ userId }) => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Удалить проект?")) return;
     await deleteProject(id);
     setProjects((p) => p.filter((x) => x.id !== id));
   };
@@ -481,7 +524,7 @@ const ProjectsTab = ({ userId }) => {
         <button
           className="btn btn--primary"
           style={{ display: "flex", alignItems: "center", gap: 6 }}
-          onClick={() => setModal(initProject(userId))}
+          onClick={() => navigate("/create-project")}
         >
           <PlusIcon style={{ width: 16, height: 16 }} /> Новый проект
         </button>
@@ -497,7 +540,11 @@ const ProjectsTab = ({ userId }) => {
       )}
 
       {projects.map((p) => (
-        <div key={p.id} className="project-card">
+        <div
+          key={p.id}
+          className="project-card"
+          onClick={() => navigate(`/project/${p.id}`)}
+        >
           <div className="project-card__header">
             <div className="project-card__info">
               <p className="project-card__name">{p.name}</p>
@@ -514,23 +561,26 @@ const ProjectsTab = ({ userId }) => {
             <div className="project-card__actions">
               <button
                 className="btn-icon"
-                onClick={() =>
-                  setModal({
-                    ...p,
-                    startDate: p.startDate ?? "",
-                    finishDate: p.finishDate ?? "",
-                    actualCost: p.actualCost ?? "",
-                    notes: p.notes ?? "",
-                    description: p.description ?? "",
-                  })
-                }
+                onClick={() => navigate(`/project/${p.id}`)}
+                aria-label="Открыть"
+                title="Открыть"
+              >
+                <WrenchScrewdriverIcon />
+              </button>
+              <button
+                className="btn-icon"
+                onClick={() => navigate(`/edit-project/${p.id}`)}
                 aria-label="Редактировать"
+                title="Редактировать"
               >
                 <PencilIcon />
               </button>
               <button
                 className="btn-icon btn-icon--danger"
-                onClick={() => handleDelete(p.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setDeleteModal(p);
+                }}
                 aria-label="Удалить"
               >
                 <TrashIcon />
@@ -555,6 +605,15 @@ const ProjectsTab = ({ userId }) => {
           instruments={instruments}
           onSave={handleSave}
           onClose={() => setModal(null)}
+        />
+      )}
+
+      {deleteModal && (
+        <ConfirmModal
+          title="Удалить проект?"
+          message={`Проект "${deleteModal.name}" будет удалён без возможности восстановления.`}
+          onConfirm={() => handleDelete(deleteModal.id)}
+          onClose={() => setDeleteModal(null)}
         />
       )}
     </>
@@ -643,12 +702,279 @@ const FavoritesTab = ({ userId }) => {
   );
 };
 
+// ── ArticlesTab ───────────────────────────────────────────────────────────────
+
+const ArticlesTab = ({ userId }) => {
+  const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingArticleId, setDeletingArticleId] = useState(null);
+  const [articleComments, setArticleComments] = useState({});
+  const [expandedArticleId, setExpandedArticleId] = useState(null);
+  const [loadingComments, setLoadingComments] = useState({});
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    loadArticles();
+  }, [userId]);
+
+  const loadArticles = async () => {
+    try {
+      const data = await getBlogArticlesByAuthor(userId);
+      const articlesData = data.blogArticles || [];
+      setArticles(articlesData);
+
+      // Загружаем комментарии для всех статей
+      const commentsPromises = articlesData.map(async (article) => {
+        try {
+          const commentsData = await getArticleComments(article.id);
+          return {
+            articleId: article.id,
+            comments: commentsData.comments || [],
+          };
+        } catch {
+          return { articleId: article.id, comments: [] };
+        }
+      });
+
+      const commentsResults = await Promise.all(commentsPromises);
+      const commentsMap = {};
+      commentsResults.forEach(({ articleId, comments }) => {
+        commentsMap[articleId] = comments;
+      });
+      setArticleComments(commentsMap);
+    } catch {
+      setArticles([]);
+      setArticleComments({});
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "";
+    const date = new Date(dateString);
+    return date.toLocaleDateString("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  const handleDeleteClick = (articleId) => {
+    setDeletingArticleId(articleId);
+    setShowDeleteModal(true);
+  };
+
+  const loadComments = async (articleId) => {
+    if (articleComments[articleId]) {
+      setExpandedArticleId(expandedArticleId === articleId ? null : articleId);
+      return;
+    }
+
+    setLoadingComments((prev) => ({ ...prev, [articleId]: true }));
+    try {
+      const data = await getArticleComments(articleId);
+      setArticleComments((prev) => ({
+        ...prev,
+        [articleId]: data.comments || [],
+      }));
+      setExpandedArticleId(articleId);
+    } catch (err) {
+      console.error("Ошибка загрузки комментариев:", err);
+    } finally {
+      setLoadingComments((prev) => ({ ...prev, [articleId]: false }));
+    }
+  };
+
+  const toggleComments = (articleId) => {
+    if (expandedArticleId === articleId) {
+      setExpandedArticleId(null);
+    } else {
+      loadComments(articleId);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deletingArticleId) return;
+
+    try {
+      await deleteBlogArticle(deletingArticleId);
+      setArticles(articles.filter((a) => a.id !== deletingArticleId));
+    } catch (err) {
+      alert(err.message);
+    } finally {
+      setShowDeleteModal(false);
+      setDeletingArticleId(null);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setDeletingArticleId(null);
+  };
+
+  if (loading) return <p className="empty-state">Загрузка...</p>;
+
+  return (
+    <>
+      <div className="projects__toolbar">
+        <span className="projects__title">Мои статьи ({articles.length})</span>
+        <button
+          className="btn btn--primary"
+          style={{ display: "flex", alignItems: "center", gap: 6 }}
+          onClick={() => navigate("/create-article")}
+        >
+          <PlusIcon style={{ width: 16, height: 16 }} /> Новая статья
+        </button>
+      </div>
+
+      {articles.length === 0 ? (
+        <div className="empty-state">
+          <DocumentTextIcon className="empty-state__icon" />
+          <p>Статей пока нет</p>
+          <p style={{ fontSize: 13, marginTop: 4 }}>
+            Напиши свою первую статью в блог
+          </p>
+        </div>
+      ) : (
+        <div className="articles-list">
+          {articles.map((article) => (
+            <div
+              key={article.id}
+              className="article-card"
+              onClick={() => navigate(`/blog/${article.id}`)}
+            >
+              <div className="article-card__header">
+                <h3 className="article-card__title">{article.title}</h3>
+                <div className="article-card__actions">
+                  <button
+                    className="article-card__edit"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/edit-article/${article.id}`);
+                    }}
+                    title="Редактировать статью"
+                  >
+                    <PencilIcon className="article-card__icon" />
+                  </button>
+                  <button
+                    className="article-card__delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick(article.id);
+                    }}
+                    title="Удалить статью"
+                  >
+                    <TrashIcon className="article-card__icon" />
+                  </button>
+                </div>
+              </div>
+              <p className="article-card__preview">
+                {article.content.substring(0, 150)}
+                {article.content.length > 150 ? "..." : ""}
+              </p>
+              <div className="article-card__meta">
+                <span className="article-card__date">
+                  {formatDate(article.publishedAt || article.createdAt)}
+                </span>
+                <span className="article-card__stat">
+                  <EyeIcon className="article-card__icon" />
+                  {article.viewsCount}
+                </span>
+                <button
+                  className="article-card__stat article-card__stat--clickable"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleComments(article.id);
+                  }}
+                  title="Показать комментарии"
+                >
+                  <ChatBubbleLeftIcon className="article-card__icon" />
+                  {loadingComments[article.id]
+                    ? "..."
+                    : articleComments[article.id]?.length ||
+                      article.commentCount ||
+                      0}
+                </button>
+              </div>
+
+              {expandedArticleId === article.id && (
+                <div className="article-card__comments">
+                  {articleComments[article.id]?.length > 0 ? (
+                    articleComments[article.id].map((comment) => (
+                      <div key={comment.id} className="article-card__comment">
+                        <div className="article-card__comment-header">
+                          <span className="article-card__comment-author">
+                            {comment.username || "Пользователь"}
+                          </span>
+                          <span className="article-card__comment-date">
+                            {new Date(comment.createdAt).toLocaleDateString(
+                              "ru-RU",
+                              {
+                                day: "numeric",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              },
+                            )}
+                          </span>
+                        </div>
+                        <p className="article-card__comment-content">
+                          {comment.content}
+                        </p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="article-card__no-comments">
+                      Комментариев пока нет
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={cancelDelete}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal__title">Удаление статьи</h3>
+            <p className="modal__text">
+              Вы уверены, что хотите удалить эту статью? Это действие нельзя
+              отменить.
+            </p>
+            <div className="modal-form__actions">
+              <button
+                type="button"
+                className="btn btn--outline"
+                onClick={cancelDelete}
+              >
+                Отмена
+              </button>
+              <button
+                type="button"
+                className="btn btn--danger"
+                onClick={confirmDelete}
+              >
+                Удалить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
 // ── Dashboard (root) ──────────────────────────────────────────────────────────
 
 const TABS = [
   { id: "profile", label: "Профиль", Icon: UserIcon },
   { id: "projects", label: "Проекты", Icon: WrenchScrewdriverIcon },
   { id: "favorites", label: "Избранное", Icon: HeartIcon },
+  { id: "articles", label: "Статьи", Icon: DocumentTextIcon },
 ];
 
 const Dashboard = () => {
@@ -717,6 +1043,7 @@ const Dashboard = () => {
         )}
         {tab === "projects" && <ProjectsTab userId={user.id} />}
         {tab === "favorites" && <FavoritesTab userId={user.id} />}
+        {tab === "articles" && <ArticlesTab userId={user.id} />}
       </div>
     </div>
   );

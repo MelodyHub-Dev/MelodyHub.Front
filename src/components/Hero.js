@@ -6,8 +6,10 @@ import {
   UserGroupIcon,
 } from "@heroicons/react/24/outline";
 import "./Hero.css";
+import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="hero">
       <div className="hero__bg">
@@ -33,11 +35,17 @@ const Hero = () => {
             скрипок, флейт и других инструментов. От новичка до мастера.
           </p>
           <div className="hero__actions">
-            <button className="hero__btn hero__btn--primary">
+            <button
+              className="hero__btn hero__btn--primary"
+              onClick={() => navigate("/dashboard")}
+            >
               Начать проект
               <ArrowRightIcon className="hero__btn-arrow-icon" />
             </button>
-            <button className="hero__btn hero__btn--secondary">
+            <button
+              className="hero__btn hero__btn--secondary"
+              onClick={() => navigate("/catalog")}
+            >
               Смотреть каталог
             </button>
           </div>

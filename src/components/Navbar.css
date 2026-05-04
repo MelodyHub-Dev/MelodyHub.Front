@@ -59,6 +59,8 @@
 .navbar__links {
   display: flex;
   list-style: none;
+  justify-content: center;
+  width: 100%;
   gap: 32px;
   flex: 1;
 }

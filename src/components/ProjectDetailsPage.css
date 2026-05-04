@@ -1,0 +1,241 @@
+.project-details {
+  min-height: 100vh;
+  background: var(--black);
+  padding: 100px 24px 60px;
+}
+
+.project-details__container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.project-details__header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.project-details__header h1 {
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.project-details__status {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.status--planned {
+  background: rgba(99, 102, 241, 0.15);
+  color: #818cf8;
+}
+
+.status--inprogress {
+  background: rgba(255, 107, 0, 0.15);
+  color: var(--orange);
+}
+
+.status--onhold {
+  background: rgba(234, 179, 8, 0.15);
+  color: #facc15;
+}
+
+.status--completed {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.status--abandoned {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}
+
+.project-details__description {
+  font-size: 14px;
+  color: var(--gray-light);
+  margin: 0 0 24px;
+  line-height: 1.6;
+}
+
+.project-details__info {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.project-details__info-item {
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.project-details__info-label {
+  display: block;
+  font-size: 12px;
+  color: var(--gray);
+  margin-bottom: 8px;
+}
+
+.project-details__progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.project-details__progress .progress-bar {
+  flex: 1;
+}
+
+.project-details__progress span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.progress-bar {
+  height: 8px;
+  background: var(--black);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-bar__fill {
+  height: 100%;
+  background: var(--orange);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.progress-bar__fill--done {
+  background: #4ade80;
+}
+
+.project-details__notes-section {
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.project-details__notes-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 16px;
+}
+
+.project-details__note-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.project-details__note-input {
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 14px;
+  color: #fff;
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.project-details__note-input:focus {
+  border-color: var(--orange);
+}
+
+.project-details__notes-empty {
+  text-align: center;
+  color: var(--gray);
+  font-size: 14px;
+  padding: 20px 0;
+}
+
+.project-details__notes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-details__note {
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.project-details__note-content {
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  margin-bottom: 10px;
+}
+
+.project-details__note-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.project-details__note-date {
+  font-size: 12px;
+  color: var(--gray);
+}
+
+.project-details__note-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: var(--gray);
+  transition: color 0.2s;
+}
+
+.project-details__note-delete:hover {
+  color: #ef4444;
+}
+
+.project-details__note-delete svg {
+  width: 16px;
+  height: 16px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 0;
+  color: var(--gray-light);
+}
+
+.empty-state__icon {
+  width: 48px;
+  height: 48px;
+  color: var(--gray);
+  margin: 0 auto 12px;
+}
+
+.server-error {
+  padding: 10px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  color: #ef4444;
+  margin-top: 16px;
+}
+
+@media (max-width: 600px) {
+  .project-details__info {
+    grid-template-columns: 1fr;
+  }
+}
