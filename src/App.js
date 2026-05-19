@@ -2,7 +2,6 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import "./App.css";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
-import CatalogSection from "./components/CatalogSection";
 import FeaturesSection from "./components/FeaturesSection";
 import BlogSection from "./components/BlogSection";
 import QuizSection from "./components/QuizSection";
@@ -17,6 +16,7 @@ import InstrumentDetails from "./components/InstrumentDetails";
 import CreateProjectPage from "./components/CreateProjectPage";
 import EditProjectPage from "./components/EditProjectPage";
 import ProjectDetailsPage from "./components/ProjectDetailsPage";
+import ProjectsPage from "./components/ProjectsPage";
 import Calculator from "./components/Calculator";
 import Blog from "./components/Blog";
 import BlogArticlePage from "./components/BlogArticlePage";
@@ -25,19 +25,32 @@ import EditArticlePage from "./components/EditArticlePage";
 import Quizzes from "./components/Quizzes";
 import QuizPage from "./components/QuizPage";
 import PrivateRoute from "./components/PrivateRoute";
+import AdminPanel from "./components/AdminPanel";
+import AdminUsers from "./components/AdminUsers";
+import AdminArticles from "./components/AdminArticles";
+import AdminProjects from "./components/AdminProjects";
+import AdminInstruments from "./components/AdminInstruments";
+import { useAuth } from "./context/AuthContext";
 
-const HomePage = () => (
-  <div className="App">
-    <Navbar />
-    <Hero />
-    <CatalogSection />
-    <FeaturesSection />
-    <BlogSection />
-    <QuizSection />
-    <CtaSection />
-    <Footer />
-  </div>
-);
+const HomePage = () => {
+  const { currentUser } = useAuth();
+
+  if (currentUser?.role === 2) {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return (
+    <div className="App">
+      <Navbar />
+      <Hero />
+      <FeaturesSection />
+      <BlogSection />
+      <QuizSection />
+      <CtaSection />
+      <Footer />
+    </div>
+  );
+};
 
 const CatalogPage = () => (
   <>
@@ -138,7 +151,47 @@ function App() {
       <Route path="/register" element={<RegisterForm />} />
       <Route path="/verify-email" element={<VerifyEmailForm />} />
       <Route path="/catalog" element={<CatalogPage />} />
-      <Route path="/instrument/:id" element={<InstrumentDetailsPage />} />
+      <Route path="/instrument/:id" element={<InstrumentDetails />} />
+      <Route
+        path="/admin"
+        element={
+          <PrivateRoute>
+            <AdminPanel />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/users"
+        element={
+          <PrivateRoute>
+            <AdminUsers />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/articles"
+        element={
+          <PrivateRoute>
+            <AdminArticles />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/projects"
+        element={
+          <PrivateRoute>
+            <AdminProjects />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/instruments"
+        element={
+          <PrivateRoute>
+            <AdminInstruments />
+          </PrivateRoute>
+        }
+      />
       <Route
         path="/dashboard"
         element={
@@ -163,14 +216,8 @@ function App() {
           </PrivateRoute>
         }
       />
-      <Route
-        path="/project/:id"
-        element={
-          <PrivateRoute>
-            <ProjectDetailsPageWrapper />
-          </PrivateRoute>
-        }
-      />
+      <Route path="/project/:id" element={<ProjectDetailsPageWrapper />} />
+      <Route path="/projects" element={<ProjectsPage />} />
       <Route path="/calculator" element={<CalculatorPage />} />
       <Route path="/blog" element={<BlogPage />} />
       <Route path="/blog/:id" element={<BlogArticlePageWrapper />} />

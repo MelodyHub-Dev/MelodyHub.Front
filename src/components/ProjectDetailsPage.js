@@ -5,7 +5,7 @@ import {
   TrashIcon,
   PlusIcon,
 } from "@heroicons/react/24/outline";
-import { getProject } from "../services/profileService";
+import { getPublicUserProjectById } from "../services/userProjectService";
 import {
   getProjectNotes,
   createProjectNote,
@@ -42,16 +42,20 @@ const ProjectDetailsPage = () => {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
+  const isOwner = currentUser?.userId === project?.userId;
+
   useEffect(() => {
-    if (!currentUser?.userId) return;
+    if (!id) return;
     loadProject();
-    loadNotes();
+    if (currentUser?.userId) {
+      loadNotes();
+    }
   }, [currentUser?.userId, id]);
 
   const loadProject = async () => {
     setProjectLoading(true);
     try {
-      const res = await getProject(id);
+      const res = await getPublicUserProjectById(id);
       setProject(res);
     } catch {
       setError("Проект не найден");
@@ -100,17 +104,6 @@ const ProjectDetailsPage = () => {
     }
   };
 
-  if (!currentUser?.userId) {
-    return (
-      <div className="project-details">
-        <div className="empty-state">
-          <WrenchScrewdriverIcon className="empty-state__icon" />
-          <p>Войдите в аккаунт для просмотра проекта</p>
-        </div>
-      </div>
-    );
-  }
-
   if (projectLoading) {
     return (
       <div className="project-details">
@@ -132,7 +125,7 @@ const ProjectDetailsPage = () => {
       <div className="project-details__container">
         <button
           className="btn btn--outline"
-          onClick={() => navigate("/dashboard")}
+          onClick={() => navigate(-1)}
           style={{ marginBottom: 20 }}
         >
           ← Назад
@@ -153,6 +146,14 @@ const ProjectDetailsPage = () => {
 
         <div className="project-details__info">
           <div className="project-details__info-item">
+            <span className="project-details__info-label">Автор</span>
+            <span>{project.authorName}</span>
+          </div>
+          <div className="project-details__info-item">
+            <span className="project-details__info-label">Инструмент</span>
+            <span>{project.instrumentName}</span>
+          </div>
+          <div className="project-details__info-item">
             <span className="project-details__info-label">Прогресс</span>
             <div className="project-details__progress">
               <div className="progress-bar">
@@ -170,62 +171,105 @@ const ProjectDetailsPage = () => {
               <span>{project.startDate}</span>
             </div>
           )}
-        </div>
-
-        <div className="project-details__notes-section">
-          <h2 className="project-details__notes-title">Заметки</h2>
-
-          <form className="project-details__note-form" onSubmit={handleAddNote}>
-            <textarea
-              className="project-details__note-input"
-              value={newNote}
-              onChange={(e) => setNewNote(e.target.value)}
-              placeholder="Напишите заметку..."
-              rows={3}
-            />
-            <button
-              type="submit"
-              className="btn btn--primary"
-              disabled={loading || !newNote.trim()}
-            >
-              {loading ? "Добавление..." : "Добавить заметку"}
-            </button>
-          </form>
-
-          {noteLoading && <p className="empty-state">Загрузка заметок...</p>}
-
-          {!noteLoading && notes.length === 0 && (
-            <p className="project-details__notes-empty">Заметок пока нет</p>
+          {project.finishDate && (
+            <div className="project-details__info-item">
+              <span className="project-details__info-label">
+                Дата окончания
+              </span>
+              <span>{project.finishDate}</span>
+            </div>
           )}
-
-          <div className="project-details__notes-list">
-            {notes.map((note) => (
-              <div key={note.id} className="project-details__note">
-                <div className="project-details__note-content">
-                  {note.content}
-                </div>
-                <div className="project-details__note-footer">
-                  <span className="project-details__note-date">
-                    {new Date(note.createdAt).toLocaleDateString("ru-RU", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
-                  <button
-                    className="project-details__note-delete"
-                    onClick={() => handleDeleteNote(note.id)}
-                    aria-label="Удалить"
-                  >
-                    <TrashIcon />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
+
+        {isOwner ? (
+          <div className="project-details__notes-section">
+            <h2 className="project-details__notes-title">Заметки</h2>
+
+            <form
+              className="project-details__note-form"
+              onSubmit={handleAddNote}
+            >
+              <textarea
+                className="project-details__note-input"
+                value={newNote}
+                onChange={(e) => setNewNote(e.target.value)}
+                placeholder="Напишите заметку..."
+                rows={3}
+              />
+              <button
+                type="submit"
+                className="btn btn--primary"
+                disabled={loading || !newNote.trim()}
+              >
+                {loading ? "Добавление..." : "Добавить заметку"}
+              </button>
+            </form>
+
+            {noteLoading && <p className="empty-state">Загрузка заметок...</p>}
+
+            {!noteLoading && notes.length === 0 && (
+              <p className="project-details__notes-empty">Заметок пока нет</p>
+            )}
+
+            <div className="project-details__notes-list">
+              {notes.map((note) => (
+                <div key={note.id} className="project-details__note">
+                  <div className="project-details__note-content">
+                    {note.content}
+                  </div>
+                  <div className="project-details__note-footer">
+                    <span className="project-details__note-date">
+                      {new Date(note.createdAt).toLocaleDateString("ru-RU", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
+                    <button
+                      className="project-details__note-delete"
+                      onClick={() => handleDeleteNote(note.id)}
+                      aria-label="Удалить"
+                    >
+                      <TrashIcon />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="project-details__notes-section">
+            <h2 className="project-details__notes-title">Заметки</h2>
+            {noteLoading ? (
+              <p className="empty-state">Загрузка...</p>
+            ) : notes.length > 0 ? (
+              <div className="project-details__notes-list">
+                {notes.map((note) => (
+                  <div key={note.id} className="project-details__note">
+                    <div className="project-details__note-content">
+                      {note.content}
+                    </div>
+                    <div className="project-details__note-footer">
+                      <span className="project-details__note-date">
+                        {new Date(note.createdAt).toLocaleDateString("ru-RU", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="project-details__notes-empty">Заметок пока нет</p>
+            )}
+          </div>
+        )}
 
         {error && <p className="server-error">{error}</p>}
       </div>

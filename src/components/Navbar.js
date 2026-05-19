@@ -52,6 +52,7 @@ const Navbar = () => {
           className={`navbar__links ${menuOpen ? "navbar__links--open" : ""}`}
         >
           <li>{navLink("/catalog", "Каталог")}</li>
+          <li>{navLink("/projects", "Проекты")}</li>
           <li>{navLink("/blog", "Блог")}</li>
           <li>{navLink("/quizzes", "Викторина")}</li>
           <li>{navLink("/calculator", "Калькулятор")}</li>
@@ -62,7 +63,11 @@ const Navbar = () => {
             <>
               <button
                 className="btn btn--outline"
-                onClick={() => navigate("/dashboard")}
+                onClick={() =>
+                  currentUser.role === 2
+                    ? navigate("/admin")
+                    : navigate("/dashboard")
+                }
               >
                 👤 {currentUser.username}
               </button>

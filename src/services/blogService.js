@@ -21,6 +21,8 @@ export const getAllBlogArticles = () =>
     handleResponse,
   );
 
+export const getArticles = getAllBlogArticles;
+
 export const getBlogArticlesByAuthor = (authorId) =>
   fetch(`${BASE_URL}/blog-articles/${authorId}`, {
     headers: authHeaders(),
@@ -61,6 +63,8 @@ export const deleteBlogArticle = (id) =>
     method: "DELETE",
     headers: authHeaders(),
   }).then(handleResponse);
+
+export const deleteArticle = deleteBlogArticle;
 
 export const updateBlogArticle = (data) => {
   // Ensure id is sent as a string (Guid)
