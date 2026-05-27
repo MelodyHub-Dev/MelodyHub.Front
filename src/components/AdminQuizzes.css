@@ -1,0 +1,260 @@
+.admin-quizzes {
+  min-height: 100vh;
+  background-color: var(--black);
+  color: #ffffff;
+  padding: 100px 24px 40px;
+}
+
+.admin-quizzes__header {
+  max-width: 1200px;
+  margin: 0 auto 30px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.admin-quizzes__back {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--gray-light);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.admin-quizzes__back:hover {
+  color: var(--orange);
+}
+
+.admin-quizzes__back-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.admin-quizzes__header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+  flex: 1;
+}
+
+.admin-quizzes__count {
+  color: var(--gray-light);
+  font-size: 14px;
+}
+
+.admin-quizzes__top-row {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+.admin-quizzes__form {
+  display: grid;
+  gap: 16px;
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.admin-quizzes__form-row {
+  display: grid;
+  gap: 8px;
+}
+.admin-quizzes__form-row label {
+  color: var(--gray-light);
+  font-size: 14px;
+}
+.admin-quizzes__form-row input,
+.admin-quizzes__form-row textarea,
+.admin-quizzes__form-row select,
+.admin-quizzes__question-form input,
+.admin-quizzes__question-form textarea,
+.admin-quizzes__question-form select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--black);
+  color: #fff;
+  font-size: 14px;
+  outline: none;
+}
+
+.admin-quizzes__question-form {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.admin-quizzes__question-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Checkbox styling */
+.admin-quizzes__form-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+  accent-color: var(--orange);
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+/* Consistent small checkbox for question forms */
+.admin-quizzes__question-form input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  vertical-align: middle;
+  accent-color: var(--orange);
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.admin-quizzes__questions-list table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+.admin-quizzes__questions-list th,
+.admin-quizzes__questions-list td {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  font-size: 14px;
+}
+
+.admin-quizzes__questions-list th {
+  color: var(--gray-light);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.admin-quizzes__right-column {
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.admin-quizzes__list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+.admin-quizzes__list-title {
+  font-weight: 600;
+}
+.admin-quizzes__list-meta {
+  color: var(--gray-light);
+  font-size: 13px;
+}
+.admin-quizzes__list-actions {
+  display: flex;
+  gap: 5px;
+}
+
+.admin-quizzes__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 10px;
+  background: var(--orange);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.admin-quizzes__submit:hover {
+  background: #e55a00;
+  transform: translateY(-1px);
+}
+
+/* Generic primary button so other buttons use consistent look */
+.btn--primary {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition:
+    background 0.18s,
+    transform 0.18s;
+  width: 200px;
+}
+.btn--primary:hover {
+  background: #e55a00;
+  transform: translateY(-1px);
+}
+
+.btn--danger {
+  border: 1px solid #dc2626;
+  color: #dc2626;
+  background: transparent;
+}
+.btn--danger:hover {
+  background: #dc2626;
+  color: #fff;
+}
+.btn--sm {
+  padding: 8px 12px;
+  font-size: 13px;
+  margin-right: 5px;
+}
+
+.admin-quizzes__loading,
+.admin-quizzes__error {
+  max-width: 1200px;
+  margin: 80px auto;
+  text-align: center;
+  color: var(--gray-light);
+}
+
+@media (max-width: 960px) {
+  .admin-quizzes__top-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Disabled state for question form when quiz isn't created/selected */
+.admin-quizzes__question-form.disabled {
+  opacity: 0.8;
+}
+.admin-quizzes__question-form.disabled input:disabled,
+.admin-quizzes__question-form.disabled textarea:disabled,
+.admin-quizzes__question-form.disabled select:disabled,
+.admin-quizzes__question-form.disabled button:disabled {
+  background: #0b0b0b;
+  color: #777;
+  border-color: var(--border);
+  cursor: not-allowed;
+}
+.admin-quizzes__note {
+  margin-top: 8px;
+  color: var(--gray-light);
+  font-size: 13px;
+}

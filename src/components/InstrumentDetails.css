@@ -100,6 +100,123 @@
   color: #fff;
 }
 
+.instrument-details__instructions-list {
+  display: grid;
+  gap: 16px;
+}
+
+.instrument-details__instruction-card {
+  padding: 18px;
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+}
+
+.instrument-details__instruction-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.instrument-details__instruction-step {
+  display: inline-flex;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--gray-light);
+}
+
+.instrument-details__instruction-title {
+  font-weight: 600;
+  color: #fff;
+  font-size: 1rem;
+}
+
+.instrument-details__instruction-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 13px;
+  color: var(--gray-light);
+}
+
+.instrument-details__instruction-card {
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s;
+  border-radius: 14px;
+}
+
+.instrument-details__instruction-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.instrument-details__instruction-card.selected {
+  border-color: var(--orange);
+  background: rgba(255, 166, 38, 0.08);
+}
+
+.instrument-details__instruction-summary {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  padding: 18px;
+  color: inherit;
+  display: grid;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.instrument-details__instruction-summary:focus {
+  outline: 2px solid rgba(255, 166, 38, 0.6);
+  outline-offset: 2px;
+}
+
+.instrument-details__instruction-expanded {
+  padding: 0 18px 18px;
+  border-top: 1px solid var(--border);
+}
+
+.instrument-details__instruction-detail-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  color: var(--gray-light);
+}
+
+.instrument-details__instruction-detail-label {
+  min-width: 120px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.instrument-details__instruction-media {
+  margin-top: 16px;
+}
+
+.instrument-details__instruction-image,
+.instrument-details__instruction-video {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+}
+
+.instrument-details__instruction-video {
+  max-height: 360px;
+}
+
+.instrument-details__instructions-loading,
+.instrument-details__instructions-empty {
+  color: var(--gray-light);
+  margin: 0;
+}
+
 .instrument-details__description {
   font-size: 1rem;
   line-height: 1.8;

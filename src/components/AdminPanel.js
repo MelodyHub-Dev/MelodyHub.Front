@@ -6,14 +6,16 @@ import {
   MusicalNoteIcon,
   WrenchScrewdriverIcon,
   BookOpenIcon,
+  Squares2X2Icon,
   ArrowRightOnRectangleIcon,
+  LightBulbIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
 import { getStatistics } from "../services/adminService";
 import "./AdminPanel.css";
 
 const AdminPanel = () => {
-  const { currentUser, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     users: 0,
@@ -105,10 +107,25 @@ const AdminPanel = () => {
             <h3>Инструменты</h3>
             <p>Управление инструментами</p>
           </Link>
+          <Link to="/admin/materials" className="action-card">
+            <Squares2X2Icon className="action-card__icon" />
+            <h3>Материалы</h3>
+            <p>Добавлять и удалять материалы</p>
+          </Link>
+          <Link to="/admin/instrument-categories" className="action-card">
+            <Squares2X2Icon className="action-card__icon" />
+            <h3>Категории инструментов</h3>
+            <p>Добавлять и удалять категории инструментов</p>
+          </Link>
           <Link to="/admin/instructions" className="action-card">
             <BookOpenIcon className="action-card__icon" />
             <h3>Инструкции</h3>
             <p>Управление инструкциями</p>
+          </Link>
+          <Link to="/admin/quizzes" className="action-card">
+            <LightBulbIcon className="action-card__icon" />
+            <h3>Викторины</h3>
+            <p>Управление викторинами</p>
           </Link>
         </div>
       </div>

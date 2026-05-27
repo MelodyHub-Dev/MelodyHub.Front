@@ -30,12 +30,17 @@ import AdminUsers from "./components/AdminUsers";
 import AdminArticles from "./components/AdminArticles";
 import AdminProjects from "./components/AdminProjects";
 import AdminInstruments from "./components/AdminInstruments";
+import AdminMaterials from "./components/AdminMaterials";
+import AdminInstrumentCategories from "./components/AdminInstrumentCategories";
+import AdminQuizzes from "./components/AdminQuizzes";
+import AdminInstructions from "./components/AdminInstructions";
 import { useAuth } from "./context/AuthContext";
 
 const HomePage = () => {
   const { currentUser } = useAuth();
 
   if (currentUser?.role === 2) {
+    console.log(currentUser.role);
     return <Navigate to="/admin" replace />;
   }
 
@@ -56,13 +61,6 @@ const CatalogPage = () => (
   <>
     <Navbar />
     <Catalog />
-  </>
-);
-
-const InstrumentDetailsPage = () => (
-  <>
-    <Navbar />
-    <InstrumentDetails />
   </>
 );
 
@@ -189,6 +187,38 @@ function App() {
         element={
           <PrivateRoute>
             <AdminInstruments />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/materials"
+        element={
+          <PrivateRoute>
+            <AdminMaterials />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/quizzes"
+        element={
+          <PrivateRoute>
+            <AdminQuizzes />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/instrument-categories"
+        element={
+          <PrivateRoute>
+            <AdminInstrumentCategories />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/instructions"
+        element={
+          <PrivateRoute>
+            <AdminInstructions />
           </PrivateRoute>
         }
       />

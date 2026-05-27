@@ -50,7 +50,7 @@ const LoginForm = () => {
     try {
       const data = await login(form);
       authLogin(data);
-      navigate(from, { replace: true });
+      navigate("/", { replace: true });
     } catch (err) {
       if (err.message.includes("not verified")) {
         navigate("/verify-email", {

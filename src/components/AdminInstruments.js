@@ -36,6 +36,9 @@ const AdminInstruments = () => {
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [modalError, setModalError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -45,6 +48,7 @@ const AdminInstruments = () => {
     mainImageUrl: "",
     viewsCount: 0,
     categoryId: "",
+    materialIds: [],
   });
 
   useEffect(() => {
@@ -104,7 +108,9 @@ const AdminInstruments = () => {
       await deleteInstrument(confirmInstrumentId);
       setInstruments(instruments.filter((i) => i.id !== confirmInstrumentId));
     } catch (err) {
-      alert("Ошибка удаления: " + err.message);
+      setDeleteError(
+        "Ошибка удаления: " + (err.message || "Неизвестная ошибка"),
+      );
     } finally {
       setDeletingId(null);
       setShowConfirm(false);
@@ -129,6 +135,10 @@ const AdminInstruments = () => {
         mainImageUrl: instrument.mainImageUrl || "",
         viewsCount: instrument.viewsCount || 0,
         categoryId: instrument.categoryId || "",
+        materialIds:
+          instrument.materialIds ||
+          instrument.materials?.map((m) => m.id) ||
+          [],
       });
       setImagePreview(instrument.mainImageUrl || null);
       setImageFile(null);
@@ -143,6 +153,7 @@ const AdminInstruments = () => {
         mainImageUrl: "",
         viewsCount: 0,
         categoryId: "",
+        materialIds: [],
       });
       setImagePreview(null);
       setImageFile(null);
@@ -186,27 +197,28 @@ const AdminInstruments = () => {
 
     // Client-side validation
     if (!formData.name || formData.name.length < 2) {
-      alert("Название должно содержать минимум 2 символа");
+      setModalError("Название должно содержать минимум 2 символа");
       return;
     }
 
     if (!formData.description || formData.description.length < 20) {
-      alert("Описание должно содержать минимум 20 символов");
+      setModalError("Описание должно содержать минимум 20 символов");
       return;
     }
 
     if (formData.shortDescription && formData.shortDescription.length < 10) {
-      alert("Краткое описание должно содержать минимум 10 символов");
+      setModalError("Краткое описание должно содержать минимум 10 символов");
       return;
     }
 
     if (!formData.categoryId) {
-      alert("Выберите категорию");
+      setModalError("Выберите категорию");
       return;
     }
 
     try {
       setUploading(true);
+      setModalError(null);
 
       let imageUrl = formData.mainImageUrl;
 
@@ -245,11 +257,27 @@ const AdminInstruments = () => {
               : i,
           ),
         );
+      } else {
+        // No image file selected for new instrument — create normally
+        const instrumentId = await createInstrument({
+          ...formData,
+          mainImageUrl: imageUrl,
+        });
+        setInstruments([
+          ...instruments,
+          { id: instrumentId, ...formData, mainImageUrl: imageUrl },
+        ]);
       }
 
+      setSuccessMessage(
+        editingInstrument
+          ? "Инструмент успешно обновлён"
+          : "Инструмент успешно создан",
+      );
+      setTimeout(() => setSuccessMessage(null), 3000);
       handleCloseModal();
     } catch (err) {
-      alert("Ошибка: " + (err.message || "Не удалось сохранить инструмент"));
+      setModalError(err.message || "Не удалось сохранить инструмент");
     } finally {
       setUploading(false);
     }
@@ -257,9 +285,27 @@ const AdminInstruments = () => {
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
+    if (name === "materialIds") {
+      const val = value;
+      setFormData((prev) => {
+        const setIds = new Set(prev.materialIds || []);
+        if (e.target.checked) setIds.add(val);
+        else setIds.delete(val);
+        return { ...prev, materialIds: Array.from(setIds) };
+      });
+      return;
+    }
+
+    const parsedValue =
+      name === "difficulty" || type === "number"
+        ? value === ""
+          ? 0
+          : Number(value)
+        : value;
+
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "number" ? (value === "" ? 0 : Number(value)) : value,
+      [name]: parsedValue,
     }));
   };
 
@@ -295,6 +341,10 @@ const AdminInstruments = () => {
           Добавить инструмент
         </button>
       </div>
+
+      {successMessage && (
+        <div className="admin-instruments__success">{successMessage}</div>
+      )}
 
       <div className="admin-instruments__search">
         <MagnifyingGlassIcon className="admin-instruments__search-icon" />
@@ -402,6 +452,7 @@ const AdminInstruments = () => {
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h3>Подтверждение удаления</h3>
             <p>Вы уверены, что хотите удалить этот инструмент?</p>
+            {deleteError && <div className="modal__error">{deleteError}</div>}
             <div className="modal__actions">
               <button className="btn btn--outline" onClick={handleCancelDelete}>
                 Отмена
@@ -421,6 +472,7 @@ const AdminInstruments = () => {
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal modal--lg" onClick={(e) => e.stopPropagation()}>
             <h3>{editingInstrument ? "Редактирование" : "Добавление"}</h3>
+            {modalError && <div className="modal__error">{modalError}</div>}
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="name">Название * (минимум 2 символа)</label>

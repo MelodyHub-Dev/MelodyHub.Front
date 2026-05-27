@@ -11,38 +11,79 @@ import {
   getInstrumentById,
   incrementInstrumentViews,
 } from "../services/instrumentService";
+import {
+  getBlueprints,
+  getBlueprintDetails,
+} from "../services/instructionService";
 import Navbar from "./Navbar";
 import "./InstrumentDetails.css";
 
 const InstrumentDetails = () => {
   const { id } = useParams();
   const [instrument, setInstrument] = useState(null);
+  const [instructions, setInstructions] = useState([]);
+  const [selectedInstructionStep, setSelectedInstructionStep] = useState(null);
+  const [instructionsLoading, setInstructionsLoading] = useState(true);
+  const [detailsLoading, setDetailsLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadInstrument();
-    incrementViews();
-  }, [id]);
-
-  const loadInstrument = async () => {
+  const loadInstructionDetails = async (stepId) => {
     try {
-      setLoading(true);
-      const data = await getInstrumentById(id);
-      setInstrument(data);
+      setDetailsLoading(true);
+      const details = await getBlueprintDetails(stepId);
+      setSelectedInstructionStep(details);
     } catch (err) {
-      setError(err.message);
+      console.error("Ошибка загрузки деталей шага:", err);
     } finally {
-      setLoading(false);
+      setDetailsLoading(false);
     }
   };
 
-  const incrementViews = async () => {
-    try {
-      await incrementInstrumentViews(id);
-    } catch (err) {
-      console.error("Ошибка увеличения просмотров:", err);
-    }
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const data = await getInstrumentById(id);
+        setInstrument(data);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const loadInstructions = async () => {
+      try {
+        setInstructionsLoading(true);
+        const data = await getBlueprints(id);
+        const list = data?.blueprints || data || [];
+        setInstructions(list);
+        if (list.length > 0) {
+          await loadInstructionDetails(list[0].id);
+        }
+      } catch (err) {
+        console.error("Ошибка загрузки инструкций:", err);
+      } finally {
+        setInstructionsLoading(false);
+      }
+    };
+
+    const incrementViews = async () => {
+      try {
+        await incrementInstrumentViews(id);
+      } catch (err) {
+        console.error("Ошибка увеличения просмотров:", err);
+      }
+    };
+
+    loadData();
+    loadInstructions();
+    incrementViews();
+  }, [id]);
+
+  const handleSelectStep = async (stepId) => {
+    await loadInstructionDetails(stepId);
   };
 
   const getDifficultyLabel = (difficulty) => {
@@ -171,6 +212,125 @@ const InstrumentDetails = () => {
               </div>
             </div>
           )}
+
+          <div className="instrument-details__section">
+            <h2>Инструкции</h2>
+            {instructionsLoading ? (
+              <p className="instrument-details__instructions-loading">
+                Загрузка инструкций...
+              </p>
+            ) : instructions.length === 0 ? (
+              <p className="instrument-details__instructions-empty">
+                Инструкций пока нет.
+              </p>
+            ) : (
+              <>
+                <div className="instrument-details__instructions-list">
+                  {instructions
+                    .slice()
+                    .sort((a, b) => a.stepNumber - b.stepNumber)
+                    .map((step) => {
+                      const isActive = selectedInstructionStep?.id === step.id;
+                      return (
+                        <div
+                          key={step.id}
+                          className={`instrument-details__instruction-card ${isActive ? "selected" : ""}`}
+                        >
+                          <button
+                            type="button"
+                            className="instrument-details__instruction-summary"
+                            onClick={() => handleSelectStep(step.id)}
+                          >
+                            <div className="instrument-details__instruction-header">
+                              <span className="instrument-details__instruction-step">
+                                Шаг {step.stepNumber}
+                              </span>
+                              <span className="instrument-details__instruction-title">
+                                {step.title}
+                              </span>
+                            </div>
+                            <div className="instrument-details__instruction-meta">
+                              <span>
+                                {step.estimatedTimeMinutes
+                                  ? `${step.estimatedTimeMinutes} мин`
+                                  : "Время не указано"}
+                              </span>
+                              {step.imageUrl && <span>Фото</span>}
+                              {step.drawingUrl && <span>Чертёж</span>}
+                            </div>
+                          </button>
+                          {isActive && (
+                            <div className="instrument-details__instruction-expanded">
+                              {detailsLoading ? (
+                                <p className="instrument-details__instructions-loading">
+                                  Загрузка шага...
+                                </p>
+                              ) : (
+                                <>
+                                  <div className="instrument-details__instruction-detail-row">
+                                    <span className="instrument-details__instruction-detail-label">
+                                      Шаг:
+                                    </span>
+                                    <span>
+                                      #{selectedInstructionStep.stepNumber}
+                                    </span>
+                                  </div>
+                                  <div className="instrument-details__instruction-detail-row">
+                                    <span className="instrument-details__instruction-detail-label">
+                                      Название:
+                                    </span>
+                                    <span>{selectedInstructionStep.title}</span>
+                                  </div>
+                                  <div className="instrument-details__instruction-detail-row">
+                                    <span className="instrument-details__instruction-detail-label">
+                                      Время:
+                                    </span>
+                                    <span>
+                                      {selectedInstructionStep.estimatedTimeMinutes
+                                        ? `${selectedInstructionStep.estimatedTimeMinutes} мин`
+                                        : "Не указано"}
+                                    </span>
+                                  </div>
+                                  <div className="instrument-details__instruction-detail-row">
+                                    <span className="instrument-details__instruction-detail-label">
+                                      Описание:
+                                    </span>
+                                    <p>
+                                      {selectedInstructionStep.content ||
+                                        "Описание отсутствует"}
+                                    </p>
+                                  </div>
+                                  {selectedInstructionStep.imageUrl && (
+                                    <div className="instrument-details__instruction-media">
+                                      <h4>Фото шага</h4>
+                                      <img
+                                        src={selectedInstructionStep.imageUrl}
+                                        alt={`Фото шага ${selectedInstructionStep.stepNumber}`}
+                                        className="instrument-details__instruction-image"
+                                      />
+                                    </div>
+                                  )}
+                                  {selectedInstructionStep.videoUrl && (
+                                    <div className="instrument-details__instruction-media">
+                                      <h4>Видео шага</h4>
+                                      <video
+                                        src={selectedInstructionStep.videoUrl}
+                                        controls
+                                        className="instrument-details__instruction-video"
+                                      />
+                                    </div>
+                                  )}
+                                </>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         <div className="instrument-details__stats">
