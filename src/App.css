@@ -6,6 +6,9 @@
 
 /* Shared button styles used across components */
 .btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 9px 20px;
   border-radius: 8px;
   font-size: 14px;

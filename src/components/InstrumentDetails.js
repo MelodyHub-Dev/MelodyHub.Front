@@ -15,6 +15,11 @@ import {
   getBlueprints,
   getBlueprintDetails,
 } from "../services/instructionService";
+import {
+  getInstrumentMaterials,
+  getMaterialUnitText,
+  formatPrice,
+} from "../services/catalogService";
 import Navbar from "./Navbar";
 import "./InstrumentDetails.css";
 
@@ -25,6 +30,8 @@ const InstrumentDetails = () => {
   const [selectedInstructionStep, setSelectedInstructionStep] = useState(null);
   const [instructionsLoading, setInstructionsLoading] = useState(true);
   const [detailsLoading, setDetailsLoading] = useState(false);
+  const [materials, setMaterials] = useState([]);
+  const [materialsLoading, setMaterialsLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -69,6 +76,23 @@ const InstrumentDetails = () => {
       }
     };
 
+    const loadMaterials = async () => {
+      try {
+        setMaterialsLoading(true);
+        const data = await getInstrumentMaterials();
+        const allMaterials = data.items || data || [];
+        setMaterials(
+          allMaterials.filter(
+            (item) => String(item.instrumentId) === String(id),
+          ),
+        );
+      } catch (err) {
+        console.error("Ошибка загрузки материалов:", err);
+      } finally {
+        setMaterialsLoading(false);
+      }
+    };
+
     const incrementViews = async () => {
       try {
         await incrementInstrumentViews(id);
@@ -79,6 +103,7 @@ const InstrumentDetails = () => {
 
     loadData();
     loadInstructions();
+    loadMaterials();
     incrementViews();
   }, [id]);
 
@@ -112,6 +137,13 @@ const InstrumentDetails = () => {
       year: "numeric",
     });
   };
+
+  const materialsTotalCost = materials.reduce(
+    (total, material) =>
+      total +
+      Number(material.quantity || 0) * Number(material.materialUnitPrice || 0),
+    0,
+  );
 
   if (loading) {
     return (
@@ -181,6 +213,60 @@ const InstrumentDetails = () => {
               </p>
             </div>
           )}
+
+          <div className="instrument-details__section">
+            <h2>Материалы</h2>
+            {materialsLoading ? (
+              <p className="instrument-details__materials-loading">
+                Загрузка материалов...
+              </p>
+            ) : materials.length === 0 ? (
+              <p className="instrument-details__materials-empty">
+                Для этого инструмента материалы не заданы.
+              </p>
+            ) : (
+              <>
+                <div className="instrument-details__materials-summary">
+                  <span>Всего материалов: {materials.length}</span>
+                  <span>
+                    Общая стоимость: {formatPrice(materialsTotalCost)}
+                  </span>
+                </div>
+                <div className="instrument-details__materials-table-wrap">
+                  <table className="instrument-details__materials-table">
+                    <thead>
+                      <tr>
+                        <th>Материал</th>
+                        <th>Количество</th>
+                        <th>Цена за ед.</th>
+                        <th>Стоимость</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {materials.map((material) => (
+                        <tr
+                          key={`${material.instrumentId}-${material.materialId}`}
+                        >
+                          <td>{material.materialName}</td>
+                          <td>
+                            {material.quantity}{" "}
+                            {getMaterialUnitText(material.materialUnit)}
+                          </td>
+                          <td>{formatPrice(material.materialUnitPrice)}</td>
+                          <td>
+                            {formatPrice(
+                              Number(material.quantity || 0) *
+                                Number(material.materialUnitPrice || 0),
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            )}
+          </div>
 
           {instrument.difficulty !== undefined && (
             <div className="instrument-details__section">

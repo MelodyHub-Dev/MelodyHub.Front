@@ -2,10 +2,18 @@ import { getToken } from "./authService";
 
 const BASE_URL = "https://localhost:7111/api";
 
-const authHeaders = () => ({
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${getToken()}`,
-});
+const authHeaders = () => {
+  const token = getToken();
+  const headers = {
+    "Content-Type": "application/json",
+  };
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+};
 
 const handleResponse = async (res) => {
   if (!res.ok) {
@@ -60,8 +68,21 @@ export const getMaterialUnitText = (unit) => {
     2: "м²",
     3: "кг",
     4: "л",
+    Piece: "шт.",
+    Meter: "м",
+    SqMeter: "м²",
+    Kg: "кг",
+    Liter: "л",
+    piece: "шт.",
+    meter: "м",
+    sqm: "м²",
+    sqmeter: "м²",
+    sqmeter: "м²",
+    kg: "кг",
+    liter: "л",
+    litre: "л",
   };
-  return units[unit] || "шт.";
+  return units[unit] ?? units[String(unit)] ?? "шт.";
 };
 
 // Вычисление общей стоимости материалов для инструмента

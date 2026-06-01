@@ -16,10 +16,15 @@ const handleResponse = async (res) => {
   return res.json();
 };
 
-export const getAllBlogArticles = () =>
-  fetch(`${BASE_URL}/blog-articles/all`, { headers: authHeaders() }).then(
-    handleResponse,
-  );
+export const getAllBlogArticles = (isPublished) => {
+  const url = new URL(`${BASE_URL}/blog-articles/all`);
+
+  if (typeof isPublished !== "undefined") {
+    url.searchParams.append("isPublished", String(isPublished));
+  }
+
+  return fetch(url.toString(), { headers: authHeaders() }).then(handleResponse);
+};
 
 export const getArticles = getAllBlogArticles;
 

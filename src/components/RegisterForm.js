@@ -262,6 +262,12 @@ const RegisterForm = () => {
             Войти
           </Link>
         </p>
+        <p className="auth-card__footer">
+          Вернуться на главную?{" "}
+          <Link to="/" className="auth-card__footer_link">
+            На главную
+          </Link>
+        </p>
       </div>
     </div>
   );

@@ -22,13 +22,13 @@ const Footer = () => (
           <h4>Каталог</h4>
           <ul>
             <li>
-              <a href="#catalog">Струнные</a>
+              <a href="/catalog">Струнные</a>
             </li>
             <li>
-              <a href="#catalog">Ударные</a>
+              <a href="/catalog">Ударные</a>
             </li>
             <li>
-              <a href="#catalog">Духовые</a>
+              <a href="/catalog">Духовые</a>
             </li>
           </ul>
         </div>
@@ -36,13 +36,13 @@ const Footer = () => (
           <h4>Сервисы</h4>
           <ul>
             <li>
-              <a href="#calculator">Калькулятор</a>
+              <a href="/calculator">Калькулятор</a>
             </li>
             <li>
-              <a href="#quiz">Викторина</a>
+              <a href="/quizzes">Викторины</a>
             </li>
             <li>
-              <a href="#blog">Блог</a>
+              <a href="/blog">Блог</a>
             </li>
           </ul>
         </div>

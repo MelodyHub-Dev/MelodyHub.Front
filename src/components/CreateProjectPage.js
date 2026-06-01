@@ -73,7 +73,7 @@ const CreateProjectPage = () => {
       const { finishDate, actualCost, notes, ...payload } = project;
       await createProject({
         ...payload,
-        progress: Number(payload.progress),
+        progress: 0,
         startDate: payload.startDate || new Date().toISOString().split("T")[0],
       });
       setSuccess(true);
@@ -163,25 +163,6 @@ const CreateProjectPage = () => {
               onChange={(e) => set("description", e.target.value)}
               placeholder="Кратко о проекте..."
             />
-          </div>
-
-          <div className="create-project__field">
-            <label className="create-project__label">
-              Прогресс: {project.progress}%
-            </label>
-            <div className="create-project__range-wrap">
-              <input
-                className="create-project__range"
-                type="range"
-                min="0"
-                max="100"
-                value={project.progress}
-                onChange={(e) => set("progress", e.target.value)}
-              />
-              <span className="create-project__range-val">
-                {project.progress}%
-              </span>
-            </div>
           </div>
 
           <div className="create-project__field">

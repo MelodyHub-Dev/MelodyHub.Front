@@ -12,6 +12,7 @@ import {
   CheckIcon,
   EyeIcon,
   ChatBubbleLeftIcon,
+  ChartBarIcon,
 } from "@heroicons/react/24/outline";
 import {
   getUser,
@@ -25,6 +26,7 @@ import {
   getInstruments,
   uploadAvatar,
 } from "../services/profileService";
+import { getUserQuizResults } from "../services/quizService";
 import {
   getBlogArticlesByAuthor,
   deleteBlogArticle,
@@ -540,11 +542,7 @@ const ProjectsTab = ({ userId }) => {
       )}
 
       {projects.map((p) => (
-        <div
-          key={p.id}
-          className="project-card"
-          onClick={() => navigate(`/project/${p.id}`)}
-        >
+        <div key={p.id} className="project-card">
           <div className="project-card__header">
             <div className="project-card__info">
               <p className="project-card__name">{p.name}</p>
@@ -699,6 +697,163 @@ const FavoritesTab = ({ userId }) => {
         </div>
       ))}
     </div>
+  );
+};
+
+const QuizResultsTab = ({ userId }) => {
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadResults = async () => {
+      setLoading(true);
+      try {
+        const data = await getUserQuizResults(userId);
+        setResults(data.quizResults || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadResults();
+  }, [userId]);
+
+  const total = results.length;
+  const passedCount = results.filter((r) => r.passed).length;
+  const averagePercent = total
+    ? results.reduce((sum, r) => sum + (Number(r.percentage) || 0), 0) / total
+    : 0;
+  const bestResult = results.reduce((best, r) => {
+    if (!best || (Number(r.percentage) || 0) > (Number(best.percentage) || 0)) {
+      return r;
+    }
+    return best;
+  }, null);
+  const lastResult = [...results].sort(
+    (a, b) => new Date(b.completedAt) - new Date(a.completedAt),
+  )[0];
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    return new Date(value).toLocaleDateString("ru-RU", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    });
+  };
+
+  if (loading) return <p className="empty-state">Загрузка...</p>;
+  if (error) return <p className="server-error">{error}</p>;
+
+  if (total === 0) {
+    return (
+      <div className="empty-state">
+        <ChartBarIcon className="empty-state__icon" />
+        <p>Пока нет пройденных викторин.</p>
+        <p style={{ fontSize: 13, marginTop: 4 }}>
+          Пройди викторину, чтобы увидеть статистику.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <div className="projects__toolbar">
+        <span className="projects__title">Результаты викторин ({total})</span>
+        <button
+          className="btn btn--primary"
+          style={{ display: "flex", alignItems: "center", gap: 6 }}
+          onClick={() => navigate("/quizzes")}
+        >
+          <PlusIcon style={{ width: 16, height: 16 }} /> К викторинам
+        </button>
+      </div>
+
+      <div className="quiz-results__summary">
+        <div className="quiz-results__summary-card">
+          <div className="quiz-results__summary-label">Пройдено викторин</div>
+          <div className="quiz-results__summary-value">{total}</div>
+        </div>
+        <div className="quiz-results__summary-card">
+          <div className="quiz-results__summary-label">Средний процент</div>
+          <div className="quiz-results__summary-value">
+            {averagePercent.toFixed(1)}%
+          </div>
+        </div>
+        <div className="quiz-results__summary-card">
+          <div className="quiz-results__summary-label">Прошли</div>
+          <div className="quiz-results__summary-value">{passedCount}</div>
+        </div>
+        <div className="quiz-results__summary-card">
+          <div className="quiz-results__summary-label">Не прошли</div>
+          <div className="quiz-results__summary-value">
+            {total - passedCount}
+          </div>
+        </div>
+      </div>
+
+      <div className="quiz-results__card quiz-results__card--wide">
+        <div className="quiz-results__card-row">
+          <div>
+            <div className="quiz-results__card-label">Лучший результат</div>
+            <div className="quiz-results__card-value">
+              {bestResult
+                ? `${bestResult.score} / ${bestResult.maxScore}`
+                : "-"}
+            </div>
+          </div>
+          <div>
+            <div className="quiz-results__card-label">Последняя викторина</div>
+            <div className="quiz-results__card-value">
+              {lastResult
+                ? `${formatDate(lastResult.completedAt)} (${lastResult.percentage.toFixed(1)}%)`
+                : "-"}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="quiz-results__table-wrap">
+        <table className="quiz-results__table">
+          <thead>
+            <tr>
+              <th>Дата</th>
+              <th>Баллы</th>
+              <th>Макс.</th>
+              <th>Процент</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody>
+            {results
+              .slice()
+              .sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt))
+              .map((result) => (
+                <tr key={result.id}>
+                  <td>{formatDate(result.completedAt)}</td>
+                  <td>{result.score}</td>
+                  <td>{result.maxScore}</td>
+                  <td>{Number(result.percentage).toFixed(1)}%</td>
+                  <td
+                    className={
+                      result.passed
+                        ? "quiz-results__passed"
+                        : "quiz-results__failed"
+                    }
+                  >
+                    {result.passed ? "Прошёл" : "Не прошёл"}
+                  </td>
+                </tr>
+              ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 };
 
@@ -975,6 +1130,7 @@ const TABS = [
   { id: "projects", label: "Проекты", Icon: WrenchScrewdriverIcon },
   { id: "favorites", label: "Избранное", Icon: HeartIcon },
   { id: "articles", label: "Статьи", Icon: DocumentTextIcon },
+  { id: "quizResults", label: "Викторины", Icon: ChartBarIcon },
 ];
 
 const Dashboard = () => {
@@ -1007,8 +1163,6 @@ const Dashboard = () => {
         <p className="empty-state">Загрузка профиля...</p>
       </div>
     );
-
-  const initials = user.username?.slice(0, 2).toUpperCase() || "??";
 
   return (
     <div className="dashboard">
@@ -1044,6 +1198,7 @@ const Dashboard = () => {
         {tab === "projects" && <ProjectsTab userId={user.id} />}
         {tab === "favorites" && <FavoritesTab userId={user.id} />}
         {tab === "articles" && <ArticlesTab userId={user.id} />}
+        {tab === "quizResults" && <QuizResultsTab userId={user.id} />}
       </div>
     </div>
   );

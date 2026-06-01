@@ -18,7 +18,7 @@ const Blog = () => {
   const loadArticles = async () => {
     try {
       setLoading(true);
-      const data = await getAllBlogArticles();
+      const data = await getAllBlogArticles(true);
       setArticles(data.blogArticles || []);
     } catch (err) {
       setError(err.message);

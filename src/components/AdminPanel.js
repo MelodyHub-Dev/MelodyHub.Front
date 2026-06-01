@@ -9,6 +9,7 @@ import {
   Squares2X2Icon,
   ArrowRightOnRectangleIcon,
   LightBulbIcon,
+  ChatBubbleLeftIcon,
 } from "@heroicons/react/24/outline";
 import { useAuth } from "../context/AuthContext";
 import { getStatistics } from "../services/adminService";
@@ -23,6 +24,7 @@ const AdminPanel = () => {
     projects: 0,
     instruments: 0,
     instructions: 0,
+    pendingComments: 0,
   });
 
   useEffect(() => {
@@ -35,6 +37,7 @@ const AdminPanel = () => {
           projects: data.projects,
           instruments: data.instruments,
           instructions: data.instructions,
+          pendingComments: data.pendingComments || 0,
         });
       } catch (error) {
         console.error("Ошибка загрузки статистики:", error);
@@ -82,6 +85,10 @@ const AdminPanel = () => {
           <h3>Инструкции</h3>
           <p className="stat-number">{stats.instructions}</p>
         </div>
+        <div className="stat-card">
+          <h3>На модерации</h3>
+          <p className="stat-number">{stats.pendingComments}</p>
+        </div>
       </div>
 
       <div className="admin-actions">
@@ -121,6 +128,11 @@ const AdminPanel = () => {
             <BookOpenIcon className="action-card__icon" />
             <h3>Инструкции</h3>
             <p>Управление инструкциями</p>
+          </Link>
+          <Link to="/admin/comments" className="action-card">
+            <ChatBubbleLeftIcon className="action-card__icon" />
+            <h3>Модерация комментариев</h3>
+            <p>Одобрять или удалять новые комментарии</p>
           </Link>
           <Link to="/admin/quizzes" className="action-card">
             <LightBulbIcon className="action-card__icon" />

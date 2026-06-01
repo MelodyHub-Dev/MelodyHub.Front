@@ -1,5 +1,5 @@
 .calculator-container {
-  max-width: 1200px;
+  width: 1550px;
   margin: 0 auto;
   padding: 80px 20px 40px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
@@ -70,6 +70,70 @@
   flex-wrap: wrap;
 }
 
+.material-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.material-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 24px;
+  max-height: 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.button-primary {
+  background: var(--orange);
+  color: #111111;
+  box-shadow: 0 10px 22px rgba(255, 107, 0, 0.15);
+}
+
+.button-primary:hover,
+.button-primary:focus-visible {
+  background: #ff9a3c;
+}
+
+.button-secondary {
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.button-secondary:hover,
+.button-secondary:focus-visible {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.material-action-btn {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 1.4rem;
+}
+
+.material-action-btn:hover,
+.material-action-btn:focus-visible {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--orange);
+}
+
 /* ── Карточка материала ────────────────────────────────────────────────────── */
 
 .material-card {
@@ -99,11 +163,20 @@
   background: rgba(255, 107, 0, 0.05);
 }
 
-.material-info {
-  flex: 1;
+.material-image-wrapper {
+  margin-bottom: 14px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
-.material-name {
+.material-card__image {
+  width: 100%;
+  max-height: 140px;
+  border-radius: 10px;
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+
   font-size: 1.1rem;
   font-weight: 600;
   color: #ffffff;
@@ -147,11 +220,11 @@
   padding: 25px;
   border: 1px solid var(--border);
   margin-bottom: 28px;
-  width: 500px;
+  min-width: 400px;
 }
 
 .summary-panel h2 {
-  font-size: 1.2rem;
+  font-size: 1rem;
   color: var(--gray);
   margin: 0 0 20px 0;
   font-weight: 500;

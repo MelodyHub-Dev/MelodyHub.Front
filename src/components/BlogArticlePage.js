@@ -93,10 +93,6 @@ const BlogArticlePage = () => {
       });
       setNewComment("");
       await loadComments(article.id);
-      setArticle((prev) => ({
-        ...prev,
-        commentCount: (prev.commentCount || 0) + 1,
-      }));
     } catch (err) {
       setCommentError(err.message);
     } finally {

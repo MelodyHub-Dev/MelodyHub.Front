@@ -24,3 +24,29 @@ body {
   --gray-light: #cccccc;
   --border: #2a2a2a;
 }
+
+input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  min-height: 18px;
+  accent-color: var(--orange);
+  background: var(--black);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid rgba(255, 107, 0, 0.35);
+  outline-offset: 2px;
+}
+
+input[type="checkbox"]:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

@@ -1,16 +1,24 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { TrashIcon } from "@heroicons/react/24/outline";
 import {
-  WrenchScrewdriverIcon,
-  TrashIcon,
-  PlusIcon,
-} from "@heroicons/react/24/outline";
-import { getPublicUserProjectById } from "../services/userProjectService";
+  getPublicUserProjectById,
+  updateUserProject,
+} from "../services/userProjectService";
 import {
   getProjectNotes,
   createProjectNote,
   deleteProjectNote,
 } from "../services/projectNoteService";
+import {
+  getBlueprints,
+  getBlueprintDetails,
+} from "../services/instructionService";
+import {
+  getInstrumentMaterials,
+  getMaterialUnitText,
+  formatPrice,
+} from "../services/catalogService";
 import { useAuth } from "../context/AuthContext";
 import "./ProjectDetailsPage.css";
 
@@ -38,21 +46,30 @@ const ProjectDetailsPage = () => {
   const [loading, setLoading] = useState(false);
   const [noteLoading, setNoteLoading] = useState(false);
   const [projectLoading, setProjectLoading] = useState(true);
+  const [instructions, setInstructions] = useState([]);
+  const [selectedInstructionStep, setSelectedInstructionStep] = useState(null);
+  const [instructionsLoading, setInstructionsLoading] = useState(false);
+  const [detailsLoading, setDetailsLoading] = useState(false);
+  const [materials, setMaterials] = useState([]);
+  const [materialsLoading, setMaterialsLoading] = useState(false);
+  const [materialsError, setMaterialsError] = useState("");
+  const [completedSteps, setCompletedSteps] = useState([]);
   const [error, setError] = useState("");
+  const [instructionsError, setInstructionsError] = useState("");
   const { currentUser } = useAuth();
   const navigate = useNavigate();
 
   const isOwner = currentUser?.userId === project?.userId;
+  const totalSteps = instructions.length;
+  const completedCount = completedSteps.filter((stepId) =>
+    instructions.some((step) => step.id === stepId),
+  ).length;
+  const displayProgress =
+    totalSteps > 0
+      ? Math.round((completedCount / totalSteps) * 100)
+      : project?.progress;
 
-  useEffect(() => {
-    if (!id) return;
-    loadProject();
-    if (currentUser?.userId) {
-      loadNotes();
-    }
-  }, [currentUser?.userId, id]);
-
-  const loadProject = async () => {
+  const loadProject = useCallback(async () => {
     setProjectLoading(true);
     try {
       const res = await getPublicUserProjectById(id);
@@ -62,9 +79,9 @@ const ProjectDetailsPage = () => {
     } finally {
       setProjectLoading(false);
     }
-  };
+  }, [id]);
 
-  const loadNotes = async () => {
+  const loadNotes = useCallback(async () => {
     setNoteLoading(true);
     try {
       const res = await getProjectNotes(id);
@@ -74,6 +91,101 @@ const ProjectDetailsPage = () => {
     } finally {
       setNoteLoading(false);
     }
+  }, [id]);
+
+  const loadMaterials = useCallback(async () => {
+    if (!project?.instrumentId) return;
+    setMaterialsLoading(true);
+    setMaterialsError("");
+    try {
+      const res = await getInstrumentMaterials();
+      const items = res?.items || [];
+      setMaterials(
+        items.filter((item) => item.instrumentId === project.instrumentId),
+      );
+    } catch (err) {
+      setMaterialsError(err?.message || "Ошибка загрузки материалов");
+      setMaterials([]);
+    } finally {
+      setMaterialsLoading(false);
+    }
+  }, [project?.instrumentId]);
+
+  const loadInstructionDetails = useCallback(async (stepId) => {
+    setDetailsLoading(true);
+    try {
+      const details = await getBlueprintDetails(stepId);
+      setSelectedInstructionStep(details);
+    } catch (err) {
+      setInstructionsError(err?.message || "Ошибка загрузки шага инструкции");
+      setSelectedInstructionStep(null);
+    } finally {
+      setDetailsLoading(false);
+    }
+  }, []);
+
+  const loadInstructions = useCallback(async () => {
+    if (!project?.instrumentId) return;
+    setInstructionsLoading(true);
+    setInstructionsError("");
+    try {
+      const data = await getBlueprints(project.instrumentId);
+      const list = data?.blueprints || data?.Blueprints || data || [];
+      setInstructions(list);
+      if (list.length > 0) {
+        await loadInstructionDetails(list[0].id);
+      } else {
+        setSelectedInstructionStep(null);
+      }
+    } catch (err) {
+      setInstructionsError(err?.message || "Ошибка загрузки инструкций");
+      setInstructions([]);
+      setSelectedInstructionStep(null);
+    } finally {
+      setInstructionsLoading(false);
+    }
+  }, [project?.instrumentId, loadInstructionDetails]);
+
+  const loadSavedCompletedSteps = useCallback(() => {
+    if (!project?.id) return;
+    setCompletedSteps(getSavedStepIds(project.id));
+  }, [project?.id]);
+
+  useEffect(() => {
+    if (!id) return;
+    loadProject();
+    if (currentUser?.userId) {
+      loadNotes();
+    }
+  }, [currentUser?.userId, id, loadNotes, loadProject]);
+
+  useEffect(() => {
+    if (!project?.instrumentId) return;
+    loadInstructions();
+    loadSavedCompletedSteps();
+    loadMaterials();
+  }, [
+    project?.instrumentId,
+    project?.id,
+    loadInstructions,
+    loadMaterials,
+    loadSavedCompletedSteps,
+  ]);
+
+  const getSavedStepIds = (projectId) => {
+    try {
+      const raw = localStorage.getItem(`project-${projectId}-completed-steps`);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const saveStepIds = (projectId, ids) => {
+    localStorage.setItem(
+      `project-${projectId}-completed-steps`,
+      JSON.stringify(ids),
+    );
   };
 
   const handleAddNote = async (e) => {
@@ -103,6 +215,53 @@ const ProjectDetailsPage = () => {
       setError(err.message);
     }
   };
+
+  const handleToggleStep = async (stepId) => {
+    if (!project) return;
+    const nextSteps = completedSteps.includes(stepId)
+      ? completedSteps.filter((id) => id !== stepId)
+      : [...completedSteps, stepId];
+
+    setCompletedSteps(nextSteps);
+    saveStepIds(project.id, nextSteps);
+
+    const totalSteps = instructions.length;
+    if (totalSteps === 0) return;
+
+    const progress = Math.round((nextSteps.length / totalSteps) * 100);
+    let status = project.status;
+    if (progress === 100) {
+      status = 3;
+    } else if (status === 0 && progress > 0) {
+      status = 1;
+    }
+
+    try {
+      await updateUserProject({
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        status,
+        progress,
+        startDate: project.startDate,
+        finishDate: project.finishDate,
+        actualCost: project.actualCost,
+        notes: project.notes,
+      });
+      setProject((prev) => (prev ? { ...prev, progress, status } : prev));
+    } catch (err) {
+      setError(err?.message || "Ошибка обновления прогресса");
+    }
+  };
+
+  const materialsTotalCost = materials.reduce(
+    (total, material) =>
+      total +
+      Number(material.quantity || 0) * Number(material.materialUnitPrice || 0),
+    0,
+  );
+
+  const formattedMaterialsTotalCost = formatPrice(materialsTotalCost);
 
   if (projectLoading) {
     return (
@@ -154,15 +313,21 @@ const ProjectDetailsPage = () => {
             <span>{project.instrumentName}</span>
           </div>
           <div className="project-details__info-item">
+            <span className="project-details__info-label">
+              Оценочная стоимость
+            </span>
+            <span>{formattedMaterialsTotalCost}</span>
+          </div>
+          <div className="project-details__info-item">
             <span className="project-details__info-label">Прогресс</span>
             <div className="project-details__progress">
               <div className="progress-bar">
                 <div
                   className={`progress-bar__fill${project.status === 3 ? " progress-bar__fill--done" : ""}`}
-                  style={{ width: `${project.progress}%` }}
+                  style={{ width: `${displayProgress}%` }}
                 />
               </div>
-              <span>{project.progress}%</span>
+              <span>{displayProgress}%</span>
             </div>
           </div>
           {project.startDate && (
@@ -177,6 +342,167 @@ const ProjectDetailsPage = () => {
                 Дата окончания
               </span>
               <span>{project.finishDate}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="project-details__materials-section">
+          <div className="project-details__instructions-header">
+            <div>
+              <h2 className="project-details__notes-title">Материалы</h2>
+              <p className="project-details__instructions-subtitle">
+                Список материалов для {project.instrumentName}.
+              </p>
+            </div>
+          </div>
+
+          {materialsError && <p className="server-error">{materialsError}</p>}
+
+          {materialsLoading ? (
+            <p className="empty-state">Загрузка материалов...</p>
+          ) : materials.length === 0 ? (
+            <p className="project-details__notes-empty">
+              Для этого инструмента материалы не заданы.
+            </p>
+          ) : (
+            <div className="project-details__materials-table-wrap">
+              <table className="project-details__materials-table">
+                <thead>
+                  <tr>
+                    <th>Материал</th>
+                    <th>Количество</th>
+                    <th>Цена за единицу</th>
+                    <th>Стоимость</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {materials.map((material) => (
+                    <tr key={`${material.instrumentId}-${material.materialId}`}>
+                      <td>{material.materialName}</td>
+                      <td>
+                        {material.quantity}{" "}
+                        {getMaterialUnitText(material.materialUnit)}
+                      </td>
+                      <td>{formatPrice(material.materialUnitPrice)}</td>
+                      <td>
+                        {formatPrice(
+                          Number(material.quantity || 0) *
+                            Number(material.materialUnitPrice || 0),
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        <div className="project-details__instructions-section">
+          <div className="project-details__instructions-header">
+            <div>
+              <h2 className="project-details__notes-title">Инструкции</h2>
+              <p className="project-details__instructions-subtitle">
+                Шаги для инструмента {project.instrumentName}.
+              </p>
+            </div>
+            <span className="project-details__instructions-note">
+              {isOwner
+                ? "Отмечайте выполненные шаги — прогресс будет обновляться автоматически."
+                : "Только владелец проекта может отмечать шаги."}
+            </span>
+          </div>
+
+          {instructionsError && (
+            <p className="server-error">{instructionsError}</p>
+          )}
+
+          {instructionsLoading ? (
+            <p className="empty-state">Загрузка инструкций...</p>
+          ) : instructions.length === 0 ? (
+            <p className="project-details__notes-empty">
+              Нет инструкций для этого инструмента.
+            </p>
+          ) : (
+            <div className="project-details__instructions-grid">
+              <div className="project-details__instruction-list">
+                {instructions
+                  .slice()
+                  .sort((a, b) => a.stepNumber - b.stepNumber)
+                  .map((step) => {
+                    const isDone = completedSteps.includes(step.id);
+                    const isSelected = selectedInstructionStep?.id === step.id;
+                    return (
+                      <button
+                        key={step.id}
+                        type="button"
+                        className={`project-details__instruction-card${isSelected ? " selected" : ""}`}
+                        onClick={() => loadInstructionDetails(step.id)}
+                      >
+                        <div className="project-details__instruction-main">
+                          <label className="project-details__instruction-checkbox-label">
+                            <input
+                              type="checkbox"
+                              className="project-details__instruction-checkbox"
+                              checked={isDone}
+                              disabled={!isOwner}
+                              onChange={() => handleToggleStep(step.id)}
+                            />
+                            <span>{isDone ? "Выполнено" : "Открыть шаг"}</span>
+                          </label>
+                          <div className="project-details__instruction-info">
+                            <span className="project-details__instruction-step">
+                              Шаг {step.stepNumber}
+                            </span>
+                            <span className="project-details__instruction-title">
+                              {step.title}
+                            </span>
+                            <span className="project-details__instruction-meta">
+                              {step.estimatedTimeMinutes
+                                ? `${step.estimatedTimeMinutes} мин`
+                                : "Время не указано"}
+                            </span>
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
+              </div>
+
+              <div className="project-details__instruction-detail-panel">
+                {detailsLoading ? (
+                  <p className="empty-state">Загрузка шага...</p>
+                ) : selectedInstructionStep ? (
+                  <div className="project-details__instruction-detail">
+                    <h3>{selectedInstructionStep.title}</h3>
+                    <p className="project-details__instruction-step-number">
+                      Шаг {selectedInstructionStep.stepNumber}
+                    </p>
+                    <p>
+                      {selectedInstructionStep.content ||
+                        "Описание отсутствует"}
+                    </p>
+                    {selectedInstructionStep.imageUrl && (
+                      <img
+                        src={selectedInstructionStep.imageUrl}
+                        alt={`Фото шага ${selectedInstructionStep.stepNumber}`}
+                        className="project-details__instruction-image"
+                      />
+                    )}
+                    {selectedInstructionStep.videoUrl && (
+                      <video
+                        src={selectedInstructionStep.videoUrl}
+                        controls
+                        className="project-details__instruction-video"
+                      />
+                    )}
+                  </div>
+                ) : (
+                  <p className="empty-state">
+                    Выберите шаг, чтобы увидеть детали.
+                  </p>
+                )}
+              </div>
             </div>
           )}
         </div>

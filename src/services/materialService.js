@@ -29,6 +29,25 @@ export const createMaterial = (data) =>
     body: JSON.stringify(data),
   }).then(handleResponse);
 
+export const updateMaterial = (data) =>
+  fetch(`${BASE_URL}/materials/update`, {
+    method: "PUT",
+    headers: authHeaders(),
+    body: JSON.stringify(data),
+  }).then(handleResponse);
+
+export const uploadMaterialImage = (id, file) => {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return fetch(`${BASE_URL}/materials/${id}/image`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${getToken()}`,
+    },
+    body: formData,
+  }).then(handleResponse);
+};
 export const deleteMaterial = (id) =>
   fetch(`${BASE_URL}/materials/delete/${id}`, {
     method: "DELETE",

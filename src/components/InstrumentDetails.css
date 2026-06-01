@@ -223,6 +223,53 @@
   color: var(--gray-light);
 }
 
+.instrument-details__materials-summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 0;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.instrument-details__materials-table-wrap {
+  overflow-x: auto;
+}
+
+.instrument-details__materials-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--black-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.instrument-details__materials-table th,
+.instrument-details__materials-table td {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.95rem;
+  color: var(--gray-light);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.instrument-details__materials-table th {
+  background: rgba(255, 255, 255, 0.03);
+  color: #fff;
+  font-weight: 600;
+}
+
+.instrument-details__materials-table tr:last-child td {
+  border-bottom: none;
+}
+
+.instrument-details__materials-loading,
+.instrument-details__materials-empty {
+  color: var(--gray-light);
+  margin: 0;
+}
+
 .instrument-details__difficulty {
   background: var(--black-card);
   border: 1px solid var(--border);

@@ -2,14 +2,19 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   ArrowLeftIcon,
-  PencilIcon,
   TrashIcon,
   DocumentTextIcon,
   EyeIcon,
   ChatBubbleLeftIcon,
   MagnifyingGlassIcon,
+  CheckCircleIcon,
+  XCircleIcon,
 } from "@heroicons/react/24/outline";
-import { getArticles, deleteArticle } from "../services/blogService";
+import {
+  getArticles,
+  deleteArticle,
+  updateBlogArticle,
+} from "../services/blogService";
 import "./AdminArticles.css";
 
 const AdminArticles = () => {
@@ -18,6 +23,7 @@ const AdminArticles = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [actionLoadingId, setActionLoadingId] = useState(null);
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmArticleId, setConfirmArticleId] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -81,6 +87,31 @@ const AdminArticles = () => {
   const handleCancelDelete = () => {
     setShowConfirm(false);
     setConfirmArticleId(null);
+  };
+
+  const handleTogglePublished = async (article) => {
+    try {
+      setActionLoadingId(article.id);
+      await updateBlogArticle({
+        id: article.id,
+        title: "",
+        content: "",
+        viewsCount: 0,
+        isPublished: !article.isPublished,
+      });
+
+      setArticles((prev) =>
+        prev.map((item) =>
+          item.id === article.id
+            ? { ...item, isPublished: !item.isPublished }
+            : item,
+        ),
+      );
+    } catch (err) {
+      alert("Ошибка обновления статуса публикации: " + err.message);
+    } finally {
+      setActionLoadingId(null);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -175,7 +206,7 @@ const AdminArticles = () => {
                   <span
                     className={`badge ${article.isPublished ? "badge--published" : "badge--draft"}`}
                   >
-                    {article.isPublished ? "Опубликовано" : "Черновик"}
+                    {article.isPublished ? "Опубликовано" : "На модерации"}
                   </span>
                 </td>
                 <td>
@@ -187,6 +218,22 @@ const AdminArticles = () => {
                     >
                       <EyeIcon className="btn__icon" />
                     </Link>
+                    <button
+                      className="btn btn--outline btn--sm"
+                      onClick={() => handleTogglePublished(article)}
+                      disabled={actionLoadingId === article.id}
+                      title={
+                        article.isPublished
+                          ? "Снять публикацию"
+                          : "Опубликовать"
+                      }
+                    >
+                      {article.isPublished ? (
+                        <XCircleIcon className="btn__icon" />
+                      ) : (
+                        <CheckCircleIcon className="btn__icon" />
+                      )}
+                    </button>
                     <button
                       className="btn btn--outline btn--sm btn--danger"
                       onClick={() => handleDeleteClick(article.id)}

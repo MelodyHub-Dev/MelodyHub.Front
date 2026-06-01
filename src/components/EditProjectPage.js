@@ -1,10 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  WrenchScrewdriverIcon,
-  PlusIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { WrenchScrewdriverIcon, PlusIcon } from "@heroicons/react/24/outline";
 import {
   getProject,
   updateProject,
@@ -191,25 +187,6 @@ const EditProjectPage = () => {
               onChange={(e) => set("description", e.target.value)}
               placeholder="Кратко о проекте..."
             />
-          </div>
-
-          <div className="edit-project__field">
-            <label className="edit-project__label">
-              Прогресс: {project.progress}%
-            </label>
-            <div className="edit-project__range-wrap">
-              <input
-                className="edit-project__range"
-                type="range"
-                min="0"
-                max="100"
-                value={project.progress}
-                onChange={(e) => set("progress", e.target.value)}
-              />
-              <span className="edit-project__range-val">
-                {project.progress}%
-              </span>
-            </div>
           </div>
 
           <div className="edit-project__field">

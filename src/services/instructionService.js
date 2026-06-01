@@ -2,10 +2,14 @@ import { getToken } from "./authService";
 
 const BASE_URL = "https://localhost:7111/api";
 
-const authHeaders = () => ({
-  "Content-Type": "application/json",
-  Authorization: `Bearer ${getToken()}`,
-});
+const authHeaders = () => {
+  const headers = { "Content-Type": "application/json" };
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+  return headers;
+};
 
 const handleResponse = async (res) => {
   if (!res.ok) {

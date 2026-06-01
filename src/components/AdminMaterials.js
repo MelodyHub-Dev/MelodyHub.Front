@@ -3,12 +3,15 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeftIcon,
   TrashIcon,
+  PencilSquareIcon,
   PlusIcon,
   MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 import {
   getMaterials,
   createMaterial,
+  updateMaterial,
+  uploadMaterialImage,
   deleteMaterial,
 } from "../services/materialService";
 import "./AdminMaterials.css";
@@ -33,10 +36,16 @@ const AdminMaterials = () => {
     unit: 0,
     avgPrice: 0,
     category: "",
+    imageUrl: "",
   });
+  const [selectedImageFile, setSelectedImageFile] = useState(null);
+  const [imagePreviewUrl, setImagePreviewUrl] = useState("");
   const [formError, setFormError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
+  const [editingId, setEditingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
   useEffect(() => {
     loadMaterials();
@@ -79,39 +88,127 @@ const AdminMaterials = () => {
     }
 
     try {
-      const data = {
+      const baseData = {
+        id: editingId,
         name: formData.name.trim(),
         description: formData.description.trim() || null,
         unit: Number(formData.unit),
         avgPrice: Number(formData.avgPrice) || 0,
         category: formData.category.trim() || null,
       };
-      const materialId = await createMaterial(data);
-      setMaterials((prev) => [
-        ...prev,
-        { id: materialId, ...data, unit: Number(data.unit) },
-      ]);
-      setSuccessMessage("Материал успешно добавлен");
+
+      let updatedMaterial = {
+        ...baseData,
+        unit: Number(baseData.unit),
+      };
+
+      if (editingId) {
+        await updateMaterial(baseData);
+        if (selectedImageFile) {
+          const result = await uploadMaterialImage(
+            editingId,
+            selectedImageFile,
+          );
+          updatedMaterial = { ...updatedMaterial, imageUrl: result.imageUrl };
+        }
+
+        setMaterials((prev) =>
+          prev.map((material) =>
+            material.id === editingId
+              ? { ...material, ...updatedMaterial }
+              : material,
+          ),
+        );
+        setSuccessMessage("Материал успешно обновлен");
+      } else {
+        const materialId = await createMaterial(baseData);
+        if (selectedImageFile) {
+          const result = await uploadMaterialImage(
+            materialId,
+            selectedImageFile,
+          );
+          updatedMaterial = { ...updatedMaterial, imageUrl: result.imageUrl };
+        }
+
+        setMaterials((prev) => [
+          ...prev,
+          { id: materialId, ...updatedMaterial },
+        ]);
+        setSuccessMessage("Материал успешно добавлен");
+      }
+
       setFormData({
         name: "",
         description: "",
         unit: 0,
         avgPrice: 0,
         category: "",
+        imageUrl: "",
       });
+      setSelectedImageFile(null);
+      setImagePreviewUrl("");
+      setEditingId(null);
       setTimeout(() => setSuccessMessage(null), 3000);
     } catch (err) {
-      setFormError(err.message || "Не удалось создать материал");
+      setFormError(
+        err.message ||
+          (editingId
+            ? "Не удалось обновить материал"
+            : "Не удалось создать материал"),
+      );
     }
   };
 
-  const handleDelete = async (id) => {
-    if (!window.confirm("Удалить материал?")) return;
+  const handleEdit = (material) => {
+    setEditingId(material.id);
+    setFormData({
+      name: material.name || "",
+      description: material.description || "",
+      unit: material.unit ?? 0,
+      avgPrice: material.avgPrice ?? 0,
+      category: material.category || "",
+      imageUrl: material.imageUrl || "",
+    });
+    setSelectedImageFile(null);
+    setImagePreviewUrl(material.imageUrl || "");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setFormData({
+      name: "",
+      description: "",
+      unit: 0,
+      avgPrice: 0,
+      category: "",
+      imageUrl: "",
+    });
+    setSelectedImageFile(null);
+    setImagePreviewUrl("");
+    setFormError(null);
+    setSuccessMessage(null);
+  };
+
+  const openDeleteModal = (id) => {
+    setConfirmDeleteId(id);
+    setShowDeleteConfirm(true);
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+    setConfirmDeleteId(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!confirmDeleteId) return;
 
     try {
-      setDeletingId(id);
-      await deleteMaterial(id);
-      setMaterials((prev) => prev.filter((material) => material.id !== id));
+      setDeletingId(confirmDeleteId);
+      await deleteMaterial(confirmDeleteId);
+      setMaterials((prev) => prev.filter((material) => material.id !== confirmDeleteId));
+      setShowDeleteConfirm(false);
+      setConfirmDeleteId(null);
     } catch (err) {
       setError(err.message || "Не удалось удалить материал");
     } finally {
@@ -125,6 +222,18 @@ const AdminMaterials = () => {
       ...prev,
       [name]: type === "number" ? Number(value) : value,
     }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files?.[0] ?? null;
+    setSelectedImageFile(file);
+
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setImagePreviewUrl(previewUrl);
+    } else {
+      setImagePreviewUrl(formData.imageUrl || "");
+    }
   };
 
   if (loading) {
@@ -201,6 +310,25 @@ const AdminMaterials = () => {
                 placeholder="0.00"
               />
             </div>
+            <div className="admin-materials__form-row">
+              <label>Изображение материала</label>
+              <input type="file" accept="image/*" onChange={handleFileChange} />
+            </div>
+            {imagePreviewUrl && (
+              <div className="admin-materials__image-preview">
+                <img
+                  src={imagePreviewUrl}
+                  alt="Превью материала"
+                  className="admin-materials__image"
+                  onError={(e) => {
+                    const target = e.target;
+                    if (target instanceof HTMLImageElement) {
+                      target.style.display = "none";
+                    }
+                  }}
+                />
+              </div>
+            )}
             <div className="admin-materials__form-row admin-materials__form-row--full">
               <label>Описание</label>
               <textarea
@@ -221,13 +349,24 @@ const AdminMaterials = () => {
               </div>
             )}
 
-            <button
-              type="submit"
-              className="btn btn--primary admin-materials__submit"
-            >
-              <PlusIcon className="admin-materials__submit-icon" />
-              Добавить материал
-            </button>
+            <div className="admin-materials__form-actions">
+              <button
+                type="submit"
+                className="btn btn--primary admin-materials__submit"
+              >
+                <PlusIcon className="admin-materials__submit-icon" />
+                {editingId ? "Сохранить изменения" : "Добавить материал"}
+              </button>
+              {editingId && (
+                <button
+                  type="button"
+                  className="btn btn--secondary admin-materials__submit"
+                  onClick={handleCancelEdit}
+                >
+                  Отменить
+                </button>
+              )}
+            </div>
           </form>
 
           <div className="admin-materials__search admin-materials__search--below">
@@ -247,6 +386,7 @@ const AdminMaterials = () => {
         <table className="admin-materials__table">
           <thead>
             <tr>
+              <th>Изображение</th>
               <th>Название</th>
               <th>Категория</th>
               <th>Ед. изм.</th>
@@ -257,6 +397,23 @@ const AdminMaterials = () => {
           <tbody>
             {filteredMaterials.map((material) => (
               <tr key={material.id}>
+                <td>
+                  {material.imageUrl ? (
+                    <img
+                      src={material.imageUrl}
+                      alt={material.name}
+                      className="admin-materials__row-image"
+                      onError={(e) => {
+                        const target = e.target;
+                        if (target instanceof HTMLImageElement) {
+                          target.style.display = "none";
+                        }
+                      }}
+                    />
+                  ) : (
+                    "-"
+                  )}
+                </td>
                 <td>{material.name || "-"}</td>
                 <td>{material.category || "-"}</td>
                 <td>
@@ -270,8 +427,16 @@ const AdminMaterials = () => {
                 <td>
                   <button
                     type="button"
+                    className="btn btn--secondary btn--sm"
+                    onClick={() => handleEdit(material)}
+                  >
+                    <PencilSquareIcon className="btn__icon" />
+                    Редактировать
+                  </button>
+                  <button
+                    type="button"
                     className="btn btn--danger btn--sm"
-                    onClick={() => handleDelete(material.id)}
+                    onClick={() => openDeleteModal(material.id)}
                     disabled={deletingId === material.id}
                   >
                     <TrashIcon className="btn__icon" />
@@ -283,6 +448,27 @@ const AdminMaterials = () => {
           </tbody>
         </table>
       </div>
+
+      {showDeleteConfirm && (
+        <div className="modal-overlay" onClick={handleCancelDelete}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h3>Подтверждение удаления</h3>
+            <p>Вы уверены, что хотите удалить этот материал?</p>
+            <div className="modal__actions">
+              <button className="btn btn--outline" onClick={handleCancelDelete}>
+                Отмена
+              </button>
+              <button
+                className="btn btn--primary btn--danger"
+                onClick={handleConfirmDelete}
+                disabled={deletingId === confirmDeleteId}
+              >
+                Удалить
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -34,6 +34,7 @@ import AdminMaterials from "./components/AdminMaterials";
 import AdminInstrumentCategories from "./components/AdminInstrumentCategories";
 import AdminQuizzes from "./components/AdminQuizzes";
 import AdminInstructions from "./components/AdminInstructions";
+import AdminComments from "./components/AdminComments";
 import { useAuth } from "./context/AuthContext";
 
 const HomePage = () => {
@@ -219,6 +220,14 @@ function App() {
         element={
           <PrivateRoute>
             <AdminInstructions />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin/comments"
+        element={
+          <PrivateRoute>
+            <AdminComments />
           </PrivateRoute>
         }
       />
