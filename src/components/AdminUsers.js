@@ -168,14 +168,16 @@ const AdminUsers = () => {
                 <td>{new Date(user.createdAt).toLocaleDateString()}</td>
                 <td>
                   <div className="admin-users__actions">
-                    <button
-                      className="btn btn--outline btn--sm btn--danger"
-                      onClick={() => handleDeleteClick(user.id)}
-                      disabled={deletingId === user.id}
-                      title="Удалить"
-                    >
-                      <TrashIcon className="btn__icon" />
-                    </button>
+                    {user.role === 1 && (
+                      <button
+                        className="btn btn--outline btn--sm btn--danger"
+                        onClick={() => handleDeleteClick(user.id)}
+                        disabled={deletingId === user.id}
+                        title="Удалить"
+                      >
+                        <TrashIcon className="btn__icon" />
+                      </button>
+                    )}
                   </div>
                 </td>
               </tr>
